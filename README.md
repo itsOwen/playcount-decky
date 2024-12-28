@@ -2,8 +2,8 @@
 
 <img src="/assets/playcount-logo.png" alt="PlayCount Banner"/>
 
-[![Decky Downloads](https://img.shields.io/github/downloads/itsOwen/player-pulse/total?color=455da5&style=for-the-badge&label=Downloads)](https://github.com/itsOwen/playcount-decky/releases/latest)
-[![Latest Release](https://img.shields.io/github/v/release/itsOwen/player-pulse?color=455da5&style=for-the-badge&label=Latest)](https://github.com/itsOwen/playcount-decky/releases/latest)
+[![Decky Downloads](https://img.shields.io/github/downloads/itsOwen/playcount/total?color=455da5&style=for-the-badge&label=Downloads)](https://github.com/itsOwen/playcount-decky/releases/latest)
+[![Latest Release](https://img.shields.io/github/v/release/itsOwen/playcount?color=455da5&style=for-the-badge&label=Latest)](https://github.com/itsOwen/playcount-decky/releases/latest)
 
 A powerful Steam Deck plugin that shows real-time player counts for your Steam games! Stay informed about the active player base of any game in your library and also while purchasing games on Steam Store 👥
 
@@ -49,8 +49,8 @@ A powerful Steam Deck plugin that shows real-time player counts for your Steam g
 ### Building from Source
 ```bash
 # Clone the repository
-git clone https://github.com/itsOwen/player-pulse.git
-cd player-pulse
+git clone https://github.com/itsOwen/playcount.git
+cd playcount
 
 # Install dependencies
 pnpm install
