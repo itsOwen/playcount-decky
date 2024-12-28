@@ -1,0 +1,38 @@
+{
+  "name": "playcount-decky",
+  "version": "1.0",
+  "description": "A Steam Deck plugin that shows current player counts for your steam games.",
+  "scripts": {
+    "build": "shx rm -rf dist && rollup -c",
+    "watch": "rollup -c -w"
+  },
+  "keywords": ["decky", "plugin", "steam-deck", "deck"],
+  "author": "itsOwen",
+  "license": "BSD-3-Clause",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^21.1.0",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "@rollup/plugin-replace": "^4.0.0",
+    "@rollup/plugin-typescript": "^8.3.3",
+    "@types/react": "16.14.0",
+    "@types/webpack": "^5.28.0",
+    "rollup": "^2.77.1",
+    "rollup-plugin-import-assets": "^1.1.1",
+    "shx": "^0.3.4",
+    "tslib": "^2.4.0",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "decky-frontend-lib": "^3.25.0",
+    "react-icons": "^4.4.0"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "react",
+        "react-dom"
+      ]
+    }
+  }
+}
