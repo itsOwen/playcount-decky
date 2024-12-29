@@ -2,10 +2,12 @@ export let CACHE: Cache;
 
 export class Cache {
   public readonly APP_ID_KEY = "APP_ID";
+  public readonly PLAYER_COUNT_PREFIX = "PLAYER_COUNT_";
   private cache: Partial<Record<string, any>> = {};
   private subscribers: Map<string, () => void> = new Map();
   private readonly CACHE_VERSION = "1.0";
-  private readonly CACHE_EXPIRY = 1000 * 60 * 30; // 30 minutes
+  private readonly CACHE_EXPIRY = 1000 * 60 * 5; // 5 minutes for player count data
+  private readonly CACHE_EXPIRY_LONG = 1000 * 60 * 30; // 30 minutes for other data
 
   constructor() {
     this.loadFromLocalStorage();
@@ -35,7 +37,7 @@ export class Cache {
   async loadValue(key: string): Promise<any> {
     const cacheItem = this.cache[key];
     
-    if (cacheItem && this.isValid(cacheItem)) {
+    if (cacheItem && this.isValid(cacheItem, this.getExpiryForKey(key))) {
       return cacheItem.value;
     }
     
@@ -61,7 +63,25 @@ export class Cache {
     }
   }
 
-  private isValid(cacheItem: any): boolean {
+  // New method for caching player count data
+  async setPlayerCount(appId: string, count: number): Promise<void> {
+    const key = `${this.PLAYER_COUNT_PREFIX}${appId}`;
+    await this.setValue(key, count);
+  }
+
+  // New method for retrieving cached player count
+  async getPlayerCount(appId: string): Promise<number | null> {
+    const key = `${this.PLAYER_COUNT_PREFIX}${appId}`;
+    return this.loadValue(key);
+  }
+
+  private getExpiryForKey(key: string): number {
+    return key.startsWith(this.PLAYER_COUNT_PREFIX) 
+      ? this.CACHE_EXPIRY 
+      : this.CACHE_EXPIRY_LONG;
+  }
+
+  private isValid(cacheItem: any, expiry: number): boolean {
     if (!cacheItem || !cacheItem.timestamp || !cacheItem.version) {
       return false;
     }
@@ -73,13 +93,13 @@ export class Cache {
 
     // Check expiry
     const age = Date.now() - cacheItem.timestamp;
-    return age < this.CACHE_EXPIRY;
+    return age < expiry;
   }
 
   private cleanExpiredItems(): void {
     let hasChanges = false;
     for (const [key, item] of Object.entries(this.cache)) {
-      if (!this.isValid(item)) {
+      if (!this.isValid(item, this.getExpiryForKey(key))) {
         delete this.cache[key];
         hasChanges = true;
       }

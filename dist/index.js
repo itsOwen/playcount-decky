@@ -91,10 +91,12 @@
   class Cache {
       constructor() {
           this.APP_ID_KEY = "APP_ID";
+          this.PLAYER_COUNT_PREFIX = "PLAYER_COUNT_";
           this.cache = {};
           this.subscribers = new Map();
           this.CACHE_VERSION = "1.0";
-          this.CACHE_EXPIRY = 1000 * 60 * 30; // 30 minutes
+          this.CACHE_EXPIRY = 1000 * 60 * 5; // 5 minutes for player count data
+          this.CACHE_EXPIRY_LONG = 1000 * 60 * 30; // 30 minutes for other data
           this.loadFromLocalStorage();
           // Clean expired items periodically
           setInterval(() => this.cleanExpiredItems(), 1000 * 60 * 5); // Every 5 minutes
@@ -116,7 +118,7 @@
       }
       async loadValue(key) {
           const cacheItem = this.cache[key];
-          if (cacheItem && this.isValid(cacheItem)) {
+          if (cacheItem && this.isValid(cacheItem, this.getExpiryForKey(key))) {
               return cacheItem.value;
           }
           // If cache miss or expired, remove it
@@ -138,7 +140,22 @@
               this.notifySubscribers();
           }
       }
-      isValid(cacheItem) {
+      // New method for caching player count data
+      async setPlayerCount(appId, count) {
+          const key = `${this.PLAYER_COUNT_PREFIX}${appId}`;
+          await this.setValue(key, count);
+      }
+      // New method for retrieving cached player count
+      async getPlayerCount(appId) {
+          const key = `${this.PLAYER_COUNT_PREFIX}${appId}`;
+          return this.loadValue(key);
+      }
+      getExpiryForKey(key) {
+          return key.startsWith(this.PLAYER_COUNT_PREFIX)
+              ? this.CACHE_EXPIRY
+              : this.CACHE_EXPIRY_LONG;
+      }
+      isValid(cacheItem, expiry) {
           if (!cacheItem || !cacheItem.timestamp || !cacheItem.version) {
               return false;
           }
@@ -148,12 +165,12 @@
           }
           // Check expiry
           const age = Date.now() - cacheItem.timestamp;
-          return age < this.CACHE_EXPIRY;
+          return age < expiry;
       }
       cleanExpiredItems() {
           let hasChanges = false;
           for (const [key, item] of Object.entries(this.cache)) {
-              if (!this.isValid(item)) {
+              if (!this.isValid(item, this.getExpiryForKey(key))) {
                   delete this.cache[key];
                   hasChanges = true;
               }
@@ -189,76 +206,102 @@
       const [appId, setAppId] = React.useState(undefined);
       const [playerCount, setPlayerCount] = React.useState("");
       const [isVisible, setIsVisible] = React.useState(false);
+      const mountedRef = React.useRef(true);
       React.useEffect(() => {
-          function loadAppId() {
-              CACHE.loadValue(CACHE.APP_ID_KEY).then((id) => {
-                  console.log("Loaded AppID:", id); // Debug log
-                  setAppId(id);
-              });
+          mountedRef.current = true;
+          async function loadAppId() {
+              if (!mountedRef.current)
+                  return;
+              const id = await CACHE.loadValue(CACHE.APP_ID_KEY);
+              if (!id) {
+                  setIsVisible(false);
+                  setAppId(undefined);
+                  return;
+              }
+              setAppId(id);
           }
           loadAppId();
           CACHE.subscribe("PlayerCount", loadAppId);
+          const handleRouteChange = () => {
+              // Check if we're on either a game page or store page
+              const isOnGamePage = window.location.pathname.includes('/library/app/');
+              const isOnStorePage = window.location.pathname.includes('/steamweb');
+              if (!isOnGamePage && !isOnStorePage) {
+                  setIsVisible(false);
+                  setAppId(undefined);
+                  CACHE.setValue(CACHE.APP_ID_KEY, ""); // Clear cache when leaving both pages
+              }
+          };
+          // Listen for both navigation events and history changes
+          window.addEventListener('popstate', handleRouteChange);
+          window.addEventListener('pushstate', handleRouteChange);
+          window.addEventListener('replacestate', handleRouteChange);
+          // Initial check
+          handleRouteChange();
           return () => {
+              mountedRef.current = false;
               CACHE.unsubscribe("PlayerCount");
+              setIsVisible(false);
+              setAppId(undefined);
+              setPlayerCount("");
+              window.removeEventListener('popstate', handleRouteChange);
+              window.removeEventListener('pushstate', handleRouteChange);
+              window.removeEventListener('replacestate', handleRouteChange);
           };
       }, []);
       React.useEffect(() => {
+          let interval;
           const fetchPlayerCount = async () => {
-              if (!appId) {
+              if (!appId || !mountedRef.current) {
                   setIsVisible(false);
                   return;
               }
-              console.log("Fetching player count for appId:", appId); // Debug log
               try {
-                  const url = `https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=${appId}`;
-                  console.log("Fetching URL:", url); // Debug log
-                  const response = await serverAPI.fetchNoCors(url, {
+                  const response = await serverAPI.fetchNoCors(`https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=${appId}`, {
                       method: "GET",
-                      headers: {
-                          'Accept': 'application/json'
-                      }
+                      headers: { 'Accept': 'application/json' }
                   });
-                  console.log("Raw response:", response); // Debug log
+                  if (!mountedRef.current)
+                      return;
                   if (response.success) {
-                      try {
-                          const data = JSON.parse(response.result.body);
-                          console.log("Parsed data:", data); // Debug log
-                          if (data.response.result === 1) {
-                              const formattedCount = new Intl.NumberFormat().format(data.response.player_count);
-                              setPlayerCount(`🟢 Currently Playing: ${formattedCount}`);
-                              setIsVisible(true);
-                          }
-                          else {
-                              setPlayerCount("No player data available");
-                              setIsVisible(true);
-                          }
+                      const data = JSON.parse(response.result.body);
+                      if (data.response.result === 1) {
+                          const formattedCount = new Intl.NumberFormat().format(data.response.player_count);
+                          setPlayerCount(`🟢 Currently Playing: ${formattedCount}`);
+                          setIsVisible(true);
                       }
-                      catch (parseError) {
-                          console.error("Error parsing response:", parseError);
-                          console.error("Response body:", response.result.body);
-                          setPlayerCount("Error parsing data");
+                      else {
+                          setPlayerCount("No player data available");
                           setIsVisible(true);
                       }
                   }
                   else {
-                      console.error("Fetch failed:", response); // Debug log
                       throw new Error("Failed to fetch player count");
                   }
               }
               catch (error) {
-                  console.error("Error in fetchPlayerCount:", error);
-                  if (error instanceof Error) {
-                      setPlayerCount(`Error: ${error.message}`);
-                  }
-                  else {
-                      setPlayerCount("Error fetching player count");
-                  }
+                  if (!mountedRef.current)
+                      return;
+                  setPlayerCount(error instanceof Error ? `Error: ${error.message}` : "Error fetching player count");
                   setIsVisible(true);
               }
           };
-          fetchPlayerCount();
+          if (appId) {
+              fetchPlayerCount();
+              interval = setInterval(fetchPlayerCount, 30000);
+          }
+          else {
+              setIsVisible(false);
+          }
+          return () => {
+              if (interval) {
+                  clearInterval(interval);
+              }
+          };
       }, [appId, serverAPI]);
-      return isVisible ? (window.SP_REACT.createElement("div", { className: deckyFrontendLib.staticClasses.PanelSectionTitle, onClick: () => {
+      if (!isVisible)
+          return null;
+      return (window.SP_REACT.createElement("div", { className: deckyFrontendLib.staticClasses.PanelSectionTitle, onClick: () => {
               if (appId) {
                   deckyFrontendLib.Navigation.NavigateToExternalWeb(`https://steamcharts.com/app/${appId}`);
               }
@@ -273,14 +316,12 @@
               fontSize: "16px",
               zIndex: 7002,
               position: "fixed",
-              bottom: 0,
+              bottom: 2,
               left: '50%',
-              transform: `translateX(-50%) translateY(${isVisible ? 0 : 100}%)`,
-              transition: "transform 0.22s cubic-bezier(0, 0.73, 0.48, 1)",
-              backgroundColor: "#1a1a1a",
+              transform: `translateX(-50%)`,
               color: "#ffffff",
               cursor: "pointer",
-          } }, playerCount)) : null;
+          } }, playerCount));
   };
 
   const History = deckyFrontendLib.findModuleChild((m) => {
@@ -348,10 +389,60 @@
       };
   }
 
+  function patchLibrary(serverApi) {
+      let isOnLibraryPage = false;
+      // Create a reusable patch function
+      function patchAppPage(route) {
+          const routeProps = deckyFrontendLib.findInReactTree(route, (x) => x?.renderFunc);
+          if (routeProps) {
+              deckyFrontendLib.afterPatch(routeProps, "renderFunc", (_, ret) => {
+                  try {
+                      // Extract appId from URL
+                      const appId = window.location.pathname.match(/\/library\/app\/([\d]+)/)?.[1];
+                      if (appId) {
+                          isOnLibraryPage = true;
+                          // Update cache with new appId
+                          CACHE.setValue(CACHE.APP_ID_KEY, appId);
+                      }
+                  }
+                  catch (error) {
+                      console.error("Error in library patch:", error);
+                  }
+                  return ret;
+              });
+          }
+          return route;
+      }
+      const handleRouteChange = () => {
+          if (!window.location.pathname.includes('/library/app/')) {
+              if (isOnLibraryPage) {
+                  isOnLibraryPage = false;
+                  CACHE.setValue(CACHE.APP_ID_KEY, "");
+              }
+          }
+      };
+      window.addEventListener('popstate', handleRouteChange);
+      // Add the library page patch
+      const unpatch = serverApi.routerHook.addPatch('/library/app/:appid', patchAppPage);
+      // Return cleanup function
+      return () => {
+          if (unpatch) {
+              unpatch(null);
+          }
+          window.removeEventListener('popstate', handleRouteChange);
+          if (isOnLibraryPage) {
+              CACHE.setValue(CACHE.APP_ID_KEY, "");
+          }
+      };
+  }
+
   var index = deckyFrontendLib.definePlugin((serverApi) => {
       Cache.init();
+      // Add global component
       serverApi.routerHook.addGlobalComponent("PlayerCount", () => window.SP_REACT.createElement(PlayerCount, { serverAPI: serverApi }));
+      // Initialize patches
       const storePatch = patchStore(serverApi);
+      const libraryPatch = patchLibrary(serverApi);
       return {
           title: window.SP_REACT.createElement("div", { className: deckyFrontendLib.staticClasses.Title }, "Player Pulse"),
           content: (window.SP_REACT.createElement(deckyFrontendLib.PanelSection, { title: "About" },
@@ -374,7 +465,10 @@
           icon: window.SP_REACT.createElement(FaUsers, null),
           onDismount() {
               serverApi.routerHook.removeGlobalComponent("PlayerCount");
-              storePatch?.();
+              if (storePatch)
+                  storePatch();
+              if (libraryPatch)
+                  libraryPatch();
           },
       };
   });

@@ -1,6 +1,5 @@
-import { FC } from 'react';
+import { FC, useEffect, useState, useRef } from 'react';
 import { Navigation, staticClasses, ServerAPI } from 'decky-frontend-lib';
-import { useEffect, useState } from 'react';
 import { CACHE } from '../utils/Cache';
 
 interface PlayerCountProps {
@@ -18,92 +17,120 @@ export const PlayerCount: FC<PlayerCountProps> = ({ serverAPI }) => {
   const [appId, setAppId] = useState<string | undefined>(undefined);
   const [playerCount, setPlayerCount] = useState<string>("");
   const [isVisible, setIsVisible] = useState<boolean>(false);
+  const mountedRef = useRef(true);
 
   useEffect(() => {
-    function loadAppId() {
-      CACHE.loadValue(CACHE.APP_ID_KEY).then((id) => {
-        console.log("Loaded AppID:", id);  // Debug log
-        setAppId(id);
-      });
+    mountedRef.current = true;
+
+    async function loadAppId() {
+      if (!mountedRef.current) return;
+      const id = await CACHE.loadValue(CACHE.APP_ID_KEY);
+      if (!id) {
+        setIsVisible(false);
+        setAppId(undefined);
+        return;
+      }
+      setAppId(id);
     }
+
     loadAppId();
     CACHE.subscribe("PlayerCount", loadAppId);
 
+    const handleRouteChange = () => {
+      // Check if we're on either a game page or store page
+      const isOnGamePage = window.location.pathname.includes('/library/app/');
+      const isOnStorePage = window.location.pathname.includes('/steamweb');
+
+      if (!isOnGamePage && !isOnStorePage) {
+        setIsVisible(false);
+        setAppId(undefined);
+        CACHE.setValue(CACHE.APP_ID_KEY, "");  // Clear cache when leaving both pages
+      }
+    };
+
+    // Listen for both navigation events and history changes
+    window.addEventListener('popstate', handleRouteChange);
+    window.addEventListener('pushstate', handleRouteChange);
+    window.addEventListener('replacestate', handleRouteChange);
+
+    // Initial check
+    handleRouteChange();
+
     return () => {
+      mountedRef.current = false;
       CACHE.unsubscribe("PlayerCount");
+      setIsVisible(false);
+      setAppId(undefined);
+      setPlayerCount("");
+      window.removeEventListener('popstate', handleRouteChange);
+      window.removeEventListener('pushstate', handleRouteChange);
+      window.removeEventListener('replacestate', handleRouteChange);
     };
   }, []);
 
   useEffect(() => {
+    let interval: ReturnType<typeof setInterval> | undefined;
+
     const fetchPlayerCount = async () => {
-      if (!appId) {
+      if (!appId || !mountedRef.current) {
         setIsVisible(false);
         return;
       }
 
-      console.log("Fetching player count for appId:", appId);  // Debug log
-
       try {
-        const url = `https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=${appId}`;
-        console.log("Fetching URL:", url);  // Debug log
-
         const response = await serverAPI.fetchNoCors<{ body: string }>(
-          url,
+          `https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=${appId}`,
           {
             method: "GET",
-            headers: {
-              'Accept': 'application/json'
-            }
+            headers: { 'Accept': 'application/json' }
           }
         );
 
-        console.log("Raw response:", response);  // Debug log
+        if (!mountedRef.current) return;
 
         if (response.success) {
-          try {
-            const data: SteamPlayerResponse = JSON.parse(response.result.body);
-            console.log("Parsed data:", data);  // Debug log
-
-            if (data.response.result === 1) {
-              const formattedCount = new Intl.NumberFormat().format(data.response.player_count);
-              setPlayerCount(`🟢 Currently Playing: ${formattedCount}`);
-              setIsVisible(true);
-            } else {
-              setPlayerCount("No player data available");
-              setIsVisible(true);
-            }
-          } catch (parseError) {
-            console.error("Error parsing response:", parseError);
-            console.error("Response body:", response.result.body);
-            setPlayerCount("Error parsing data");
+          const data: SteamPlayerResponse = JSON.parse(response.result.body);
+          
+          if (data.response.result === 1) {
+            const formattedCount = new Intl.NumberFormat().format(data.response.player_count);
+            setPlayerCount(`🟢 Currently Playing: ${formattedCount}`);
+            setIsVisible(true);
+          } else {
+            setPlayerCount("No player data available");
             setIsVisible(true);
           }
         } else {
-          console.error("Fetch failed:", response);  // Debug log
           throw new Error("Failed to fetch player count");
         }
       } catch (error) {
-        console.error("Error in fetchPlayerCount:", error);
-        if (error instanceof Error) {
-          setPlayerCount(`Error: ${error.message}`);
-        } else {
-          setPlayerCount("Error fetching player count");
-        }
+        if (!mountedRef.current) return;
+        setPlayerCount(error instanceof Error ? `Error: ${error.message}` : "Error fetching player count");
         setIsVisible(true);
       }
     };
 
-    fetchPlayerCount();
+    if (appId) {
+      fetchPlayerCount();
+      interval = setInterval(fetchPlayerCount, 30000);
+    } else {
+      setIsVisible(false);
+    }
+
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
   }, [appId, serverAPI]);
 
-  return isVisible ? (
+  if (!isVisible) return null;
+
+  return (
     <div
       className={staticClasses.PanelSectionTitle}
       onClick={() => {
         if (appId) {
-          Navigation.NavigateToExternalWeb(
-            `https://steamcharts.com/app/${appId}`
-          );
+          Navigation.NavigateToExternalWeb(`https://steamcharts.com/app/${appId}`);
         }
       }}
       style={{
@@ -117,16 +144,14 @@ export const PlayerCount: FC<PlayerCountProps> = ({ serverAPI }) => {
         fontSize: "16px",
         zIndex: 7002,
         position: "fixed",
-        bottom: 0,
+        bottom: 2,
         left: '50%',
-        transform: `translateX(-50%) translateY(${isVisible ? 0 : 100}%)`,
-        transition: "transform 0.22s cubic-bezier(0, 0.73, 0.48, 1)",
-        backgroundColor: "#1a1a1a",
+        transform: `translateX(-50%)`,
         color: "#ffffff",
         cursor: "pointer",
       }}
     >
       {playerCount}
     </div>
-  ) : null;
+  );
 };
