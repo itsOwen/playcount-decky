@@ -2,27 +2,21 @@
 
 <img src="/assets/playcount-logo.png" alt="PlayCount Banner"/>
 
-[![Decky Downloads](https://img.shields.io/github/downloads/itsOwen/playcount/total?color=455da5&style=for-the-badge&label=Downloads)](https://github.com/itsOwen/playcount-decky/releases/latest)
-[![Latest Release](https://img.shields.io/github/v/release/itsOwen/playcount?color=455da5&style=for-the-badge&label=Latest)](https://github.com/itsOwen/playcount-decky/releases/latest)
-
 A powerful Steam Deck plugin that shows real-time player counts for your Steam games! Stay informed about the active player base of any game in your library and also while purchasing games on Steam Store 👥
 
 ## ✨ Features
 
 - Clean and minimal interface
 - Display Live Player Count in Steam Store.
-- Display Live Player Count in Steam Library Games (Upcoming)
+- Display Live Player Count in Steam Library Games.
 
 ## 📸 Screenshots
 
 ### Game Library View
-<img src="/assets/PlayCount.jpg" alt="Count1"/>
+<img src="/assets/PlayCount1.jpg" alt="Count1"/>
 
 ### Store Page Integration
-<img src="/assets/PlayCount2.jpg" alt="Count2"/>
-
-### Quick Access Menu
-<img src="/assets/PlayCount3.jpg" alt="Count3"/>
+<img src="/assets/PlayCount.jpg" alt="Count2"/>
 
 ## 🚀 Installation
 

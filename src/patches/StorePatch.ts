@@ -1,8 +1,6 @@
 import { ServerAPI, findModuleChild } from "decky-frontend-lib"
 import { CACHE } from "../utils/Cache"
 
-// most of the below is stolen from https://github.com/OMGDuke/protondb-decky/tree/28/store-injection
-
 type Tab = {
   description: string
   devtoolsFrontendUrl: string
@@ -93,4 +91,3 @@ export function patchStore(serverApi: ServerAPI): () => void {
     CACHE.setValue(CACHE.APP_ID_KEY, "");
   };
 }
-
