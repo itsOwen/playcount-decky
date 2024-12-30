@@ -1,29 +1,31 @@
 import {
+  routerHook,
+} from "@decky/api";
+import {
   definePlugin,
-  ServerAPI,
   staticClasses,
   ButtonItem,
   PanelSection,
   PanelSectionRow,
-} from "decky-frontend-lib";
+} from "@decky/ui";
 import { FaUsers, FaGithub, FaTwitter, FaInstagram } from "react-icons/fa";
 import { PlayerCount } from "./components/PlayerCount";
 import { patchStore } from "./patches/StorePatch";
 import { patchLibrary } from "./patches/LibraryPatch";
 import { Cache } from "./utils/Cache";
 
-export default definePlugin((serverApi: ServerAPI) => {
+export default definePlugin(() => {
   Cache.init();
 
   // Add global component
-  serverApi.routerHook.addGlobalComponent(
+  routerHook.addGlobalComponent(
     "PlayerCount",
-    () => <PlayerCount serverAPI={serverApi} />
+    () => <PlayerCount />
   );
 
   // Initialize patches
-  const storePatch = patchStore(serverApi);
-  const libraryPatch = patchLibrary(serverApi);
+  const storePatch = patchStore();
+  const libraryPatch = patchLibrary();
 
   return {
     title: <div className={staticClasses.Title}>Player Pulse</div>,
@@ -66,7 +68,7 @@ export default definePlugin((serverApi: ServerAPI) => {
     ),
     icon: <FaUsers />,
     onDismount() {
-      serverApi.routerHook.removeGlobalComponent("PlayerCount");
+      routerHook.removeGlobalComponent("PlayerCount");
       if (storePatch) storePatch();
       if (libraryPatch) libraryPatch();
     },
