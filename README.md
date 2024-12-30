@@ -28,7 +28,6 @@
 ## 🚀 Installation  
 
 ### Method 1: Decky Store (Recommended)  
-*Currently pending Decky Store listing.*  
 
 1. Install [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader).  
 2. Open the Decky Store (🛒) from the Quick Access Menu on your Steam Deck.  
@@ -69,7 +68,7 @@ Access these settings through the Decky Loader plugin menu.
 
 1. Clone the repository:  
    ```bash
-   git clone https://github.com/itsOwen/playcount.git
+   git clone https://github.com/itsOwen/playcount-decky.git
    cd playcount
    ```  
 2. Install dependencies:  
@@ -136,13 +135,9 @@ Special thanks to the following contributors and resources:
 
 ## 📱 Connect with Me  
 
-<div align="center">  
-
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/itsOwen)  
 [![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://github.com/itsOwen)  
 [![Instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://github.com/itsOwen)  
-
-</div>  
 
 ---
 
