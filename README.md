@@ -1,108 +1,164 @@
+Here's an updated and improved full README file for your plugin:  
+
+```markdown
 # PlayCount 🎮 
 
-<img src="/assets/playcount-logo.png" alt="PlayCount Banner"/>
+<img src="/assets/playcount-logo.png" alt="PlayCount Banner" width="300"/>
 
-A powerful Steam Deck plugin that shows real-time player counts for your Steam games! Stay informed about the active player base of any game in your library and also while purchasing games on Steam Store 👥
+**PlayCount** is a powerful plugin for the Steam Deck that displays real-time player counts for your Steam games. Stay informed about the active player base of any game in your library or while exploring the Steam Store. Enhance your gaming decisions with data at your fingertips! 👥
+
+---
 
 ## ✨ Features
 
-- Clean and minimal interface
-- Display Live Player Count in Steam Store.
-- Display Live Player Count in Steam Library Games.
+- **Real-Time Data**: View live player counts for your Steam Library games.  
+- **Steam Store Integration**: Displays live player counts directly on Steam Store pages.  
+- **User-Friendly Interface**: Clean, minimal, and non-intrusive design.  
+- **Customizable**: Adjust settings like font size, update frequency, and display preferences.  
 
-## 📸 Screenshots
+---
 
-### Game Library View
-<img src="/assets/PlayCount1.jpg" alt="Count1"/>
+## 📸 Screenshots  
 
-### Store Page Integration
-<img src="/assets/PlayCount.jpg" alt="Count2"/>
+### Game Library View  
+<img src="/assets/PlayCount1.jpg" alt="Game Library View"/>  
 
-## 🚀 Installation
+### Store Page Integration  
+<img src="/assets/PlayCount.jpg" alt="Store Page Integration"/>  
 
-### Method 1: Decky Store (Recommended) - Pending Not yet listed on Decky Store
-1. Install [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader)
-2. Open the Decky Store (🛒) in Quick Access Menu
-3. Search for "PlayCount"
-4. Click "Install"
+---
 
-### Method 2: Manual Installation
-1. Install [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader)
-2. Download the latest release from [Releases](https://github.com/itsOwen/playcount-decky/releases)
-3. Extract the downloaded file
-4. Move the folder to `/homebrew/plugins/`
-5. Restart Decky Loader
+## 🚀 Installation  
 
-## 🛠️ Development
+### Method 1: Decky Store (Recommended)  
+*Currently pending Decky Store listing.*  
 
-### Prerequisites
-- Node.js 16 or higher
-- pnpm
-- Steam Deck or Desktop environment with Decky Loader
+1. Install [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader).  
+2. Open the Decky Store (🛒) from the Quick Access Menu on your Steam Deck.  
+3. Search for "PlayCount."  
+4. Click **Install** and restart Decky Loader.  
 
-### Building from Source
-```bash
-# Clone the repository
-git clone https://github.com/itsOwen/playcount.git
-cd playcount
+### Method 2: Manual Installation  
 
-# Install dependencies
-pnpm install
+1. Install [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader).  
+2. Download the latest release from the [PlayCount GitHub Releases](https://github.com/itsOwen/playcount-decky/releases).  
+3. Extract the downloaded file.  
+4. Move the extracted folder to `/homebrew/plugins/`.  
+5. Restart Decky Loader.  
 
-# Build the plugin
-pnpm build
-```
+---
 
-## 🔧 Configuration
+## 🔧 Configuration  
 
-PlayCount works out of the box with no configuration needed! However, you can customize:
-- Font size of the player count display
-- Bottom padding adjustment
-- Update frequency (default: 30 minutes)
+PlayCount works out of the box, but it offers customizable settings for those who want more control:  
 
-## 🤝 Contributing
+- **Font Size**: Adjust the font size of player count numbers.  
+- **Padding**: Customize bottom padding for better alignment.  
+- **Update Frequency**: Set how often player count data is refreshed (default: 30 minutes).  
 
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+Access these settings through the Decky Loader plugin menu.  
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+---
 
-## 🐛 Known Issues
+## 🛠️ Development  
 
-- None
+### Prerequisites  
 
-## 📝 License
+- Node.js 16 or higher  
+- pnpm (a fast, disk space-efficient package manager)  
+- Steam Deck or Desktop environment with Decky Loader installed  
 
-This project is licensed under the BSD-3-Clause License - see the [LICENSE](LICENSE) file for details.
+### Building from Source  
 
-## 🌟 Credits
+1. Clone the repository:  
+   ```bash
+   git clone https://github.com/itsOwen/playcount.git
+   cd playcount
+   ```  
+2. Install dependencies:  
+   ```bash
+   pnpm install
+   ```  
+3. Build the plugin:  
+   ```bash
+   pnpm run build
+   ```  
 
-- Steam API for providing player count data
-- [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader) team
-- All our amazing contributors
+After building, you can manually move the plugin files to `/homebrew/plugins/` on your Steam Deck.  
 
-## 📱 Connect with Me
+---
 
-<div align="center">
+## 🤝 Contributing  
 
-[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/itsOwen)
-[![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/owensingh_)
-[![Instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://instagram.com/owensingh_)
+We welcome contributions from the community!  
 
-</div>
+### How to Contribute  
 
-## 💖 Support the Project
+1. **Fork** the repository.  
+2. Create a new feature branch:  
+   ```bash
+   git checkout -b feature/YourFeature
+   ```  
+3. Commit your changes:  
+   ```bash
+   git commit -m "Add YourFeature"
+   ```  
+4. Push your branch:  
+   ```bash
+   git push origin feature/YourFeature
+   ```  
+5. Open a Pull Request on GitHub.  
 
-If you find this plugin useful, consider:
-- ⭐ Starring the repository
-- 🐛 Reporting bugs
-- 💡 Suggesting new features
-- 🤝 Contributing to the code
+For major changes, please open an issue to discuss your ideas first.  
 
-## Special Thanks <3
+---
 
-- OMGDuke
-- JtdeGraaf
+## 🐛 Known Issues  
+
+- **No current issues reported.**  
+- If you encounter any bugs, please [open an issue](https://github.com/itsOwen/playcount/issues).  
+
+---
+
+## 📝 License  
+
+This project is licensed under the **BSD-3-Clause License**. See the [LICENSE](LICENSE) file for more details.  
+
+---
+
+## 🌟 Credits  
+
+Special thanks to the following contributors and resources:  
+
+- [OMGDuke](https://github.com/OMGDuke)  
+- [JtdeGraaf](https://github.com/JtdeGraaf)  
+- [eXhumer](https://github.com/eXhumer)  
+- [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader)  
+
+---
+
+## 📱 Connect with Me  
+
+<div align="center">  
+
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/itsOwen)  
+[![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/owensingh_)  
+[![Instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://instagram.com/owensingh_)  
+
+</div>  
+
+---
+
+## 💖 Support the Project  
+
+If you find PlayCount helpful, consider supporting the project:  
+
+- ⭐ Star the repository  
+- 🐛 Report bugs  
+- 💡 Suggest new features  
+- 🤝 Contribute to the code  
+
+Let’s build something awesome together!  
+```  
+
+This updated README includes all necessary details about your plugin and ensures clarity, professionalism, and completeness.

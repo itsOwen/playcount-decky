@@ -17,18 +17,16 @@ import { Cache } from "./utils/Cache";
 export default definePlugin(() => {
   Cache.init();
 
-  // Add global component
   routerHook.addGlobalComponent(
     "PlayerCount",
     () => <PlayerCount />
   );
 
-  // Initialize patches
   const storePatch = patchStore();
   const libraryPatch = patchLibrary();
 
   return {
-    title: <div className={staticClasses.Title}>Player Pulse</div>,
+    title: <div className={staticClasses.Title}>PlayCount</div>,
     content: (
       <PanelSection title="About">
         <PanelSectionRow>
@@ -59,9 +57,13 @@ export default definePlugin(() => {
             </ButtonItem>
           </PanelSectionRow>
         </PanelSection>
-        <PanelSection title="Contact">
+        <PanelSection title="Contributors">
           <PanelSectionRow>
-            <div>Email: owensingh72@gmail.com</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div>OMGDuke</div>
+              <div>JtdeGraaf</div>
+              <div>eXhumer</div>
+            </div>
           </PanelSectionRow>
         </PanelSection>
       </PanelSection>
