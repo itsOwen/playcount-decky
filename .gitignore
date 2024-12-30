@@ -32,3 +32,8 @@ pnpm-debug.log*
 # Build artifacts
 *.tsbuildinfo
 .rollup.cache/
+
+deck.json
+cli/
+.pnpm-store/
+out/

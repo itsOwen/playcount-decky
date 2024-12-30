@@ -1,4 +1,5 @@
-import { ServerAPI, findModuleChild } from "decky-frontend-lib"
+import { fetchNoCors } from "@decky/api"
+import { findModuleChild } from "@decky/ui"
 import { CACHE } from "../utils/Cache"
 
 type Tab = {
@@ -28,7 +29,7 @@ const History: {
   }
 })
 
-export function patchStore(serverApi: ServerAPI): () => void {
+export function patchStore(): () => void {
   if (History && History.listen) {
     let oldUrl = "";
     const unlisten = History.listen(async (info) => {
@@ -44,12 +45,15 @@ export function patchStore(serverApi: ServerAPI): () => void {
     });
 
     const getCurrentAppID = async () => {
-      const response = await serverApi.fetchNoCors<{ body: string }>(
-        'http://localhost:8080/json'
-      );
-
       let tabs: Tab[] = [];
-      if (response.success) tabs = JSON.parse(response.result.body) || [];
+
+      try {
+        const response = await fetchNoCors('http://localhost:8080/json');
+        tabs = JSON.parse(await response.text()) || [];
+      } catch (e) {
+        tabs = [];
+      }
+
       const storeTab = tabs.find((tab) =>
         tab.url.includes('https://store.steampowered.com')
       );

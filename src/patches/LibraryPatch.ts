@@ -1,12 +1,12 @@
+import { routerHook } from '@decky/api';
 import {
   afterPatch,
   findInReactTree,
-  ServerAPI,
-} from 'decky-frontend-lib';
+} from '@decky/ui';
 import { CACHE } from "../utils/Cache";
 import { ReactElement } from 'react';
 
-export function patchLibrary(serverApi: ServerAPI): () => void {
+export function patchLibrary(): () => void {
   let isOnLibraryPage = false;
 
   // Create a reusable patch function
@@ -46,7 +46,7 @@ export function patchLibrary(serverApi: ServerAPI): () => void {
   window.addEventListener('popstate', handleRouteChange);
 
   // Add the library page patch
-  const unpatch = serverApi.routerHook.addPatch('/library/app/:appid', patchAppPage);
+  const unpatch = routerHook.addPatch('/library/app/:appid', patchAppPage);
 
   // Return cleanup function
   return () => {
