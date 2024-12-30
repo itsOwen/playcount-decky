@@ -1,10 +1,7 @@
-import { FC, useEffect, useState, useRef } from 'react';
-import { Navigation, staticClasses, ServerAPI } from 'decky-frontend-lib';
+import { useEffect, useState, useRef } from 'react';
+import { fetchNoCors } from '@decky/api';
+import { Navigation, staticClasses } from '@decky/ui';
 import { CACHE } from '../utils/Cache';
-
-interface PlayerCountProps {
-  serverAPI: ServerAPI;
-}
 
 interface SteamPlayerResponse {
   response: {
@@ -13,7 +10,7 @@ interface SteamPlayerResponse {
   }
 }
 
-export const PlayerCount: FC<PlayerCountProps> = ({ serverAPI }) => {
+export const PlayerCount = () => {
   const [appId, setAppId] = useState<string | undefined>(undefined);
   const [playerCount, setPlayerCount] = useState<string>("");
   const [isVisible, setIsVisible] = useState<boolean>(false);
@@ -78,7 +75,7 @@ export const PlayerCount: FC<PlayerCountProps> = ({ serverAPI }) => {
       }
 
       try {
-        const response = await serverAPI.fetchNoCors<{ body: string }>(
+        const response = await fetchNoCors(
           `https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/?appid=${appId}`,
           {
             method: "GET",
@@ -88,19 +85,15 @@ export const PlayerCount: FC<PlayerCountProps> = ({ serverAPI }) => {
 
         if (!mountedRef.current) return;
 
-        if (response.success) {
-          const data: SteamPlayerResponse = JSON.parse(response.result.body);
-          
-          if (data.response.result === 1) {
-            const formattedCount = new Intl.NumberFormat().format(data.response.player_count);
-            setPlayerCount(`🟢 Currently Playing: ${formattedCount}`);
-            setIsVisible(true);
-          } else {
-            setPlayerCount("No player data available");
-            setIsVisible(true);
-          }
+        const data: SteamPlayerResponse = JSON.parse(await response.text());
+        
+        if (data.response.result === 1) {
+          const formattedCount = new Intl.NumberFormat().format(data.response.player_count);
+          setPlayerCount(`🟢 Currently Playing: ${formattedCount}`);
+          setIsVisible(true);
         } else {
-          throw new Error("Failed to fetch player count");
+          setPlayerCount("No player data available");
+          setIsVisible(true);
         }
       } catch (error) {
         if (!mountedRef.current) return;
@@ -121,7 +114,7 @@ export const PlayerCount: FC<PlayerCountProps> = ({ serverAPI }) => {
         clearInterval(interval);
       }
     };
-  }, [appId, serverAPI]);
+  }, [appId]);
 
   if (!isVisible) return null;
 
