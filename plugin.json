@@ -6,6 +6,6 @@
   "publish": {
     "tags": ["Steam Charts", "Player Count", "SteamDB", "Currently Playing"],
     "description": "A Steam Deck plugin that shows current player counts for your steam games.",
-    "image": "assets/playcount-logo.png"
+    "image": "https://raw.githubusercontent.com/itsOwen/playcount-decky/refs/heads/main/assets/PlayCount-main.png"
   }
 }
