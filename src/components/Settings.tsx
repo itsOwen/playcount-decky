@@ -49,6 +49,24 @@ export const Settings = () => {
     saveSettings(newSettings);
   };
 
+  const handleStoreCountChange = (value: boolean) => {
+    const newSettings = {
+      ...settings,
+      showStoreCount: value
+    };
+    setSettings(newSettings);
+    saveSettings(newSettings);
+  };
+
+  const handleLibraryCountChange = (value: boolean) => {
+    const newSettings = {
+      ...settings,
+      showLibraryCount: value
+    };
+    setSettings(newSettings);
+    saveSettings(newSettings);
+  };
+
   return window.SP_REACT.createElement(
     PanelSection,
     { title: "Badge Settings" },
@@ -99,6 +117,32 @@ export const Settings = () => {
             description: "Toggle between rounded or sharp corners",
             checked: settings.roundedCorners,
             onChange: handleRoundedCornersChange
+          }
+        )
+      ),
+      window.SP_REACT.createElement(
+        PanelSectionRow,
+        { key: "store-count-row" },
+        window.SP_REACT.createElement(
+          ToggleField,
+          {
+            label: "Show Store Count",
+            description: "Show player count on Steam store pages",
+            checked: settings.showStoreCount,
+            onChange: handleStoreCountChange
+          }
+        )
+      ),
+      window.SP_REACT.createElement(
+        PanelSectionRow,
+        { key: "library-count-row" },
+        window.SP_REACT.createElement(
+          ToggleField,
+          {
+            label: "Show Library Count",
+            description: "Show player count in game library",
+            checked: settings.showLibraryCount,
+            onChange: handleLibraryCountChange
           }
         )
       )

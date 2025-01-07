@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { fetchNoCors } from '@decky/api';
 import { Navigation, staticClasses } from '@decky/ui';
 import { CACHE } from '../utils/Cache';
+import { loadSettings, subscribeToSettings } from '../utils/Settings';
 
 interface SteamPlayerResponse {
   response: {
@@ -11,10 +12,16 @@ interface SteamPlayerResponse {
 }
 
 export const PlayerCount = () => {
+  const [settings, setSettings] = useState(loadSettings());
   const [appId, setAppId] = useState<string | undefined>(undefined);
   const [playerCount, setPlayerCount] = useState<string>("");
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const mountedRef = useRef(true);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToSettings(setSettings);
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -113,7 +120,7 @@ export const PlayerCount = () => {
     };
   }, [appId]);
 
-  if (!isVisible) return null;
+  if (!isVisible || !settings.showStoreCount) return null;
   
   // Only show the footer text on store pages
   const isOnStorePage = window.location.pathname.includes('/steamweb');
