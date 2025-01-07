@@ -17,8 +17,10 @@
 
 ## 📸 Screenshots  
 
-### Game Library View  
-<img src="/assets/PlayCount1.jpg" alt="Game Library View"/>  
+### Game Library View
+<img src="/assets/PlayCount2.jpg" alt="Game Library View"/> 
+
+<img src="/assets/PlayCount1.jpg" alt="Game Library View"/>
 
 ### Store Page Integration  
 <img src="/assets/PlayCount.jpg" alt="Store Page Integration"/>  
@@ -41,18 +43,6 @@
 3. Extract the downloaded file.  
 4. Move the extracted folder to `/homebrew/plugins/`.  
 5. Restart Decky Loader.  
-
----
-
-## 🔧 Configuration  
-
-PlayCount works out of the box, but it offers customizable settings for those who want more control:  
-
-- **Font Size**: Adjust the font size of player count numbers.  
-- **Padding**: Customize bottom padding for better alignment.  
-- **Update Frequency**: Set how often player count data is refreshed (default: 30 minutes).  
-
-Access these settings through the Decky Loader plugin menu.  
 
 ---
 
