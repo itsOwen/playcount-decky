@@ -34,23 +34,20 @@ export const PlayerCount = () => {
     CACHE.subscribe("PlayerCount", loadAppId);
 
     const handleRouteChange = () => {
-      // Check if we're on either a game page or store page
       const isOnGamePage = window.location.pathname.includes('/library/app/');
       const isOnStorePage = window.location.pathname.includes('/steamweb');
 
       if (!isOnGamePage && !isOnStorePage) {
         setIsVisible(false);
         setAppId(undefined);
-        CACHE.setValue(CACHE.APP_ID_KEY, "");  // Clear cache when leaving both pages
+        CACHE.setValue(CACHE.APP_ID_KEY, "");
       }
     };
 
-    // Listen for both navigation events and history changes
     window.addEventListener('popstate', handleRouteChange);
     window.addEventListener('pushstate', handleRouteChange);
     window.addEventListener('replacestate', handleRouteChange);
 
-    // Initial check
     handleRouteChange();
 
     return () => {
@@ -117,16 +114,21 @@ export const PlayerCount = () => {
   }, [appId]);
 
   if (!isVisible) return null;
+  
+  // Only show the footer text on store pages
+  const isOnStorePage = window.location.pathname.includes('/steamweb');
+  if (!isOnStorePage) return null;
 
-  return (
-    <div
-      className={staticClasses.PanelSectionTitle}
-      onClick={() => {
+  return window.SP_REACT.createElement(
+    'div',
+    {
+      className: staticClasses.PanelSectionTitle,
+      onClick: () => {
         if (appId) {
           Navigation.NavigateToExternalWeb(`https://steamcharts.com/app/${appId}`);
         }
-      }}
-      style={{
+      },
+      style: {
         width: 420,
         display: "flex",
         flexDirection: "row",
@@ -134,7 +136,7 @@ export const PlayerCount = () => {
         justifyContent: "center",
         flexWrap: "wrap",
         padding: "7px 16px",
-        fontSize: "16px",
+        fontSize: "12px",
         zIndex: 7002,
         position: "fixed",
         bottom: 2,
@@ -142,9 +144,8 @@ export const PlayerCount = () => {
         transform: `translateX(-50%)`,
         color: "#ffffff",
         cursor: "pointer",
-      }}
-    >
-      {playerCount}
-    </div>
+      }
+    },
+    playerCount
   );
 };
