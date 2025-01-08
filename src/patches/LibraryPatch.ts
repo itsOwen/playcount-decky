@@ -7,7 +7,6 @@ import {
 import { routerHook, fetchNoCors } from '@decky/api';
 import { CACHE } from "../utils/Cache";
 import { PlayerBadge } from "../components/PlayerBadge";
-import { loadSettings, subscribeToSettings } from '../utils/Settings';
 
 interface SteamPlayerResponse {
   response: {
@@ -18,12 +17,6 @@ interface SteamPlayerResponse {
 
 const PlayerCountWrapper = ({ appId }: { appId: string }) => {
   const [playerCount, setPlayerCount] = window.SP_REACT.useState("Loading...");
-  const [settings, setSettings] = window.SP_REACT.useState(loadSettings());
-
-  window.SP_REACT.useEffect(() => {
-    const unsubscribe = subscribeToSettings(setSettings);
-    return () => unsubscribe();
-  }, []);
 
   window.SP_REACT.useEffect(() => {
     const fetchPlayerCount = async () => {
@@ -54,8 +47,6 @@ const PlayerCountWrapper = ({ appId }: { appId: string }) => {
 
     return () => clearInterval(interval);
   }, [appId]);
-
-  if (!settings.showLibraryCount) return null;
 
   return window.SP_REACT.createElement(PlayerBadge, { count: playerCount, appId });
 };
