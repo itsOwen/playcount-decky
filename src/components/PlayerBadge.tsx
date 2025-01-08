@@ -35,6 +35,8 @@ export const PlayerBadge = ({ count, appId }: PlayerBadgeProps) => {
     return () => unsubscribe();
   }, []);
 
+  if (!settings.showLibraryCount) return null;
+
   const positionStyle = getPositionStyle(settings.badgePosition);
   const baseSize = 12;
 

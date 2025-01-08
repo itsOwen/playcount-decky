@@ -12,19 +12,16 @@ interface SteamPlayerResponse {
 }
 
 export const PlayerCount = () => {
-  const [settings, setSettings] = useState(loadSettings());
   const [appId, setAppId] = useState<string | undefined>(undefined);
   const [playerCount, setPlayerCount] = useState<string>("");
   const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [settings, setSettings] = useState(loadSettings());
   const mountedRef = useRef(true);
 
   useEffect(() => {
-    const unsubscribe = subscribeToSettings(setSettings);
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
     mountedRef.current = true;
+    
+    const unsubscribeSettings = subscribeToSettings(setSettings);
 
     async function loadAppId() {
       if (!mountedRef.current) return;
@@ -60,6 +57,7 @@ export const PlayerCount = () => {
     return () => {
       mountedRef.current = false;
       CACHE.unsubscribe("PlayerCount");
+      unsubscribeSettings();
       setIsVisible(false);
       setAppId(undefined);
       setPlayerCount("");

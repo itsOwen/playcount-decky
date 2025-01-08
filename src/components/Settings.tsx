@@ -49,103 +49,107 @@ export const Settings = () => {
     saveSettings(newSettings);
   };
 
-  const handleStoreCountChange = (value: boolean) => {
-    const newSettings = {
-      ...settings,
-      showStoreCount: value
-    };
-    setSettings(newSettings);
-    saveSettings(newSettings);
-  };
-
-  const handleLibraryCountChange = (value: boolean) => {
-    const newSettings = {
-      ...settings,
-      showLibraryCount: value
-    };
-    setSettings(newSettings);
-    saveSettings(newSettings);
-  };
-
-  return window.SP_REACT.createElement(
-    PanelSection,
-    { title: "Badge Settings" },
-    [
-      window.SP_REACT.createElement(
-        PanelSectionRow,
-        { key: "position-row" },
+  return [
+    window.SP_REACT.createElement(
+      PanelSection,
+      { title: "Badge Settings", key: "badge-settings" },
+      [
         window.SP_REACT.createElement(
-          DropdownItem,
-          {
-            label: "Badge Position",
-            description: "Choose where the player count badge appears",
-            rgOptions: positionOptions,
-            selectedOption: settings.badgePosition,
-            onChange: handlePositionChange
-          }
-        )
-      ),
-      window.SP_REACT.createElement(
-        PanelSectionRow,
-        { key: "size-row" },
+          PanelSectionRow,
+          { key: "position-row" },
+          window.SP_REACT.createElement(
+            DropdownItem,
+            {
+              label: "Badge Position",
+              description: "Choose where the player count badge appears",
+              rgOptions: positionOptions,
+              selectedOption: settings.badgePosition,
+              onChange: handlePositionChange
+            }
+          )
+        ),
         window.SP_REACT.createElement(
-          SliderField,
-          {
-            label: "Badge Size",
-            description: "Adjust the size of the badge",
-            value: settings.badgeSize,
-            min: 0.7,
-            max: 1.5,
-            step: 0.1,
-            onChange: handleSizeChange,
-            notchLabels: [
-              { notchIndex: 0, label: "Small" },
-              { notchIndex: 4, label: "Default" },
-              { notchIndex: 8, label: "Large" }
-            ],
-            showValue: true
-          }
-        )
-      ),
-      window.SP_REACT.createElement(
-        PanelSectionRow,
-        { key: "rounded-corners-row" },
+          PanelSectionRow,
+          { key: "size-row" },
+          window.SP_REACT.createElement(
+            SliderField,
+            {
+              label: "Badge Size",
+              description: "Adjust the size of the badge",
+              value: settings.badgeSize,
+              min: 0.7,
+              max: 1.5,
+              step: 0.1,
+              onChange: handleSizeChange,
+              notchLabels: [
+                { notchIndex: 0, label: "Small" },
+                { notchIndex: 4, label: "Default" },
+                { notchIndex: 8, label: "Large" }
+              ],
+              showValue: true
+            }
+          )
+        ),
         window.SP_REACT.createElement(
-          ToggleField,
-          {
-            label: "Rounded Corners",
-            description: "Toggle between rounded or sharp corners",
-            checked: settings.roundedCorners,
-            onChange: handleRoundedCornersChange
-          }
+          PanelSectionRow,
+          { key: "rounded-corners-row" },
+          window.SP_REACT.createElement(
+            ToggleField,
+            {
+              label: "Rounded Corners",
+              description: "Toggle between rounded or sharp corners",
+              checked: settings.roundedCorners,
+              onChange: handleRoundedCornersChange
+            }
+          )
         )
-      ),
-      window.SP_REACT.createElement(
-        PanelSectionRow,
-        { key: "store-count-row" },
+      ]
+    ),
+    window.SP_REACT.createElement(
+      PanelSection,
+      { title: "Display Settings", key: "display-settings" },
+      [
         window.SP_REACT.createElement(
-          ToggleField,
-          {
-            label: "Show Store Count",
-            description: "Show player count on Steam store pages",
-            checked: settings.showStoreCount,
-            onChange: handleStoreCountChange
-          }
-        )
-      ),
-      window.SP_REACT.createElement(
-        PanelSectionRow,
-        { key: "library-count-row" },
+          PanelSectionRow,
+          { key: "show-library-count-row" },
+          window.SP_REACT.createElement(
+            ToggleField,
+            {
+              label: "Show Library Badge",
+              description: "Show player count badge in game library",
+              checked: settings.showLibraryCount,
+              onChange: (value) => {
+                const newSettings = {
+                  ...settings,
+                  showLibraryCount: value
+                };
+                setSettings(newSettings);
+                saveSettings(newSettings);
+              }
+            }
+          )
+        ),
         window.SP_REACT.createElement(
-          ToggleField,
-          {
-            label: "Show Library Count",
-            description: "Show player count in game library",
-            checked: settings.showLibraryCount,
-            onChange: handleLibraryCountChange
-          }
+          PanelSectionRow,
+          { key: "show-store-count-row" },
+          window.SP_REACT.createElement(
+            ToggleField,
+            {
+              label: "Show Store Count",
+              description: "Show player count text in Steam store",
+              checked: settings.showStoreCount,
+              onChange: (value) => {
+                const newSettings = {
+                  ...settings,
+                  showStoreCount: value
+                };
+                setSettings(newSettings);
+                saveSettings(newSettings);
+              }
+            }
+          )
         )
-      )
-    ]
-  );
+      ]
+    )
+  ];
 };

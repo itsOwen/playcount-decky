@@ -4,16 +4,16 @@ export interface Settings {
   badgePosition: BadgePosition;
   badgeSize: number;
   roundedCorners: boolean;
-  showStoreCount: boolean;  // New setting for store page
-  showLibraryCount: boolean;  // New setting for library view
+  showLibraryCount: boolean;
+  showStoreCount: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
   badgePosition: 'top-right',
   badgeSize: 1,
   roundedCorners: true,
-  showStoreCount: true,  // Default to showing counts
-  showLibraryCount: true
+  showLibraryCount: true,
+  showStoreCount: true
 };
 
 // Using a custom event for settings changes
