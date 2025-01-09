@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { fetchNoCors } from '@decky/api';
 import { Navigation, staticClasses } from '@decky/ui';
+import { FaUsers } from "react-icons/fa";
 import { CACHE } from '../utils/Cache';
 import { loadSettings, subscribeToSettings } from '../utils/Settings';
 
@@ -13,7 +14,7 @@ interface SteamPlayerResponse {
 
 export const PlayerCount = () => {
   const [appId, setAppId] = useState<string | undefined>(undefined);
-  const [playerCount, setPlayerCount] = useState<string>("");
+  const [playerCount, setPlayerCount] = useState<string | JSX.Element>("");
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [settings, setSettings] = useState(loadSettings());
   const mountedRef = useRef(true);
@@ -91,7 +92,19 @@ export const PlayerCount = () => {
         
         if (data.response.result === 1) {
           const formattedCount = new Intl.NumberFormat().format(data.response.player_count);
-          setPlayerCount(`🟢 Currently Playing: ${formattedCount}`);
+          setPlayerCount(
+            window.SP_REACT.createElement('span', { style: { display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '1px' } }, [
+              '|',
+              window.SP_REACT.createElement(FaUsers, { 
+                key: "users-icon",
+                size: 14,
+                style: { marginLeft: '8px', color: '#4CAF50' }
+              }),
+              window.SP_REACT.createElement('span', { 
+                style: { textTransform: 'none' } 
+              }, `${formattedCount} Online`)
+            ])
+          );
           setIsVisible(true);
         } else {
           setPlayerCount("No player data available");
@@ -134,19 +147,19 @@ export const PlayerCount = () => {
         }
       },
       style: {
-        width: 420,
+        width: "fit-content",
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
         flexWrap: "wrap",
-        padding: "7px 16px",
+        padding: "7px 12px",
         fontSize: "12px",
         zIndex: 7002,
         position: "fixed",
         bottom: 2,
-        left: '50%',
-        transform: `translateX(-50%)`,
+        left: '20%',
+        transform: `translateX(-20%)`,
         color: "#ffffff",
         cursor: "pointer",
       }
