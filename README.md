@@ -102,7 +102,7 @@ For major changes, please open an issue to discuss your ideas first.
 ## 🐛 Known Issues  
 
 - **No current issues reported.**  
-- If you encounter any bugs, please [open an issue](https://github.com/itsOwen/playcount/issues).  
+- If you encounter any bugs, please [open an issue](https://github.com/itsOwen/playcount-decky/issues).  
 
 ---
 
