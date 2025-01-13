@@ -97,7 +97,7 @@ export const PlayerCount = () => {
               '|',
               window.SP_REACT.createElement(FaUsers, { 
                 key: "users-icon",
-                size: 14,
+                size: Math.floor(14 * settings.storeTextSize),
                 style: { marginLeft: '8px', color: '#4CAF50' }
               }),
               window.SP_REACT.createElement('span', { 
@@ -129,7 +129,7 @@ export const PlayerCount = () => {
         clearInterval(interval);
       }
     };
-  }, [appId]);
+  }, [appId, settings.storeTextSize]);
 
   if (!isVisible || !settings.showStoreCount) return null;
   
@@ -147,19 +147,18 @@ export const PlayerCount = () => {
         }
       },
       style: {
-        width: "fit-content",
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
         flexWrap: "wrap",
         padding: "7px 12px",
-        fontSize: "12px",
+        fontSize: `${12 * settings.storeTextSize}px`,
         zIndex: 7002,
         position: "fixed",
-        bottom: 2,
-        left: '20%',
-        transform: `translateX(-20%)`,
+        bottom: settings.storeTextBottom,
+        left: `${settings.storeTextPosition}%`,
+        transform: `translateX(-${settings.storeTextPosition}%)`,
         color: "#ffffff",
         cursor: "pointer",
       }
@@ -167,3 +166,5 @@ export const PlayerCount = () => {
     playerCount
   );
 };
+
+export default PlayerCount;
