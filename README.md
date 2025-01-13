@@ -59,7 +59,7 @@
 1. Clone the repository:  
    ```bash
    git clone https://github.com/itsOwen/playcount-decky.git
-   cd playcount
+   cd playcount-decky
    ```  
 2. Install dependencies:  
    ```bash
@@ -119,7 +119,9 @@ Special thanks to the following contributors and resources:
 - [OMGDuke](https://github.com/OMGDuke)  
 - [JtdeGraaf](https://github.com/JtdeGraaf)  
 - [eXhumer](https://github.com/eXhumer)  
-- [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader)  
+- [FrogTheFrog](https://github.com/FrogTheFrog)
+- [TrainDoctor](https://github.com/TrainDoctor)
+- [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader)
 
 ---
 
