@@ -6,6 +6,9 @@ export interface Settings {
   roundedCorners: boolean;
   showLibraryCount: boolean;
   showStoreCount: boolean;
+  storeTextSize: number;
+  storeTextPosition: number;
+  storeTextBottom: number;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -13,7 +16,10 @@ export const DEFAULT_SETTINGS: Settings = {
   badgeSize: 1,
   roundedCorners: true,
   showLibraryCount: true,
-  showStoreCount: true
+  showStoreCount: true,
+  storeTextSize: 1,
+  storeTextPosition: 20,
+  storeTextBottom: 2
 };
 
 // Using a custom event for settings changes

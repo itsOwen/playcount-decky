@@ -100,29 +100,6 @@ export default definePlugin(() => {
                   )
                 ]
               )
-            ),
-            window.SP_REACT.createElement(
-              PanelSection,
-              { key: "contributors-section", title: "Contributors" },
-              window.SP_REACT.createElement(
-                PanelSectionRow,
-                null,
-                window.SP_REACT.createElement(
-                  'div',
-                  { 
-                    style: { 
-                      display: 'flex', 
-                      flexDirection: 'column', 
-                      gap: '8px' 
-                    } 
-                  },
-                  [
-                    window.SP_REACT.createElement('div', { key: "contrib-1" }, "OMGDuke"),
-                    window.SP_REACT.createElement('div', { key: "contrib-2" }, "JtdeGraaf"),
-                    window.SP_REACT.createElement('div', { key: "contrib-3" }, "eXhumer")
-                  ]
-                )
-              )
             )
           ]
         )

@@ -53,56 +53,64 @@ const PlayerCountWrapper = ({ appId }: { appId: string }) => {
 
 export function patchLibrary(): () => void {
   let isOnLibraryPage = false;
+  
+  // Store the patcher function to remove it later
+  let patchHandler: any = null;
 
-  const unpatch = routerHook.addPatch(
-    '/library/app/:appid',
-    // Only patch library pages
-    (tree: any) => {
-      const routeProps = findInReactTree(tree, (x: any) => x?.renderFunc);
-      
-      if (routeProps) {
-        const patchHandler = createReactTreePatcher([
-          (tree: any) => findInReactTree(tree, (x: any) => x?.props?.children?.props?.overview)?.props?.children
-        ], (_: any[], ret?: any) => {
-          try {
-            const container = findInReactTree(
-              ret,
-              (x: any) =>
-                Array.isArray(x?.props?.children) &&
-                x?.props?.className?.includes(
-                  appDetailsClasses.InnerContainer
-                )
-            );
+  const patchFn = (tree: any) => {
+    const routeProps = findInReactTree(tree, (x: any) => x?.renderFunc);
+    
+    if (routeProps) {
+      patchHandler = createReactTreePatcher([
+        (tree: any) => findInReactTree(tree, (x: any) => x?.props?.children?.props?.overview)?.props?.children
+      ], (_: any[], ret?: any) => {
+        try {
+          const container = findInReactTree(
+            ret,
+            (x: any) =>
+              Array.isArray(x?.props?.children) &&
+              x?.props?.className?.includes(
+                appDetailsClasses.InnerContainer
+              )
+          );
 
-            if (typeof container !== 'object') {
-              return ret;
-            }
-
-            const appId = window.location.pathname.match(/\/library\/app\/([\d]+)/)?.[1];
-            
-            if (appId) {
-              isOnLibraryPage = true;
-              CACHE.setValue(CACHE.APP_ID_KEY, appId);
-
-              if (container.props.children) {
-                container.props.children.splice(
-                  1,
-                  0,
-                  window.SP_REACT.createElement(PlayerCountWrapper, { key: "player-count", appId })
-                );
-              }
-            }
-          } catch (error) {
-            console.error("Error in library patch:", error);
+          if (typeof container !== 'object') {
+            return ret;
           }
-          return ret;
-        });
-        
-        afterPatch(routeProps, "renderFunc", patchHandler);
-      }
-      return tree;
+
+          const appId = window.location.pathname.match(/\/library\/app\/([\d]+)/)?.[1];
+          
+          if (appId) {
+            isOnLibraryPage = true;
+            CACHE.setValue(CACHE.APP_ID_KEY, appId);
+
+            if (container.props.children) {
+              // Remove any existing PlayerCountWrapper components first
+              container.props.children = container.props.children.filter(
+                (child: any) => !child?.type?.name?.includes('PlayerCountWrapper')
+              );
+              
+              // Add the new PlayerCountWrapper
+              container.props.children.splice(
+                1,
+                0,
+                window.SP_REACT.createElement(PlayerCountWrapper, { key: "player-count", appId })
+              );
+            }
+          }
+        } catch (error) {
+          console.error("Error in library patch:", error);
+        }
+        return ret;
+      });
+      
+      afterPatch(routeProps, "renderFunc", patchHandler);
     }
-  );
+    return tree;
+  };
+
+  // Add the patch and store the removal function
+  const unpatch = routerHook.addPatch('/library/app/:appid', patchFn);
 
   const handleRouteChange = () => {
     if (!window.location.pathname.includes('/library/app/')) {
@@ -116,10 +124,15 @@ export function patchLibrary(): () => void {
   window.addEventListener('popstate', handleRouteChange);
 
   return () => {
+    // Properly remove the router patch
     if (unpatch) {
-      unpatch(null as any);
+      routerHook.removePatch('/library/app/:appid', unpatch);
     }
+    
+    // Clean up event listener
     window.removeEventListener('popstate', handleRouteChange);
+    
+    // Clear cache
     if (isOnLibraryPage) {
       CACHE.setValue(CACHE.APP_ID_KEY, "");
     }
