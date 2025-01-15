@@ -7,7 +7,8 @@ import {
   ToggleField,
   ButtonItem
 } from '@decky/ui';
-import { BadgePosition, loadSettings, saveSettings, DEFAULT_SETTINGS } from '../utils/Settings';
+import { BadgePosition, loadSettings, saveSettings, DEFAULT_SETTINGS, IconType } from '../utils/Settings';
+import { iconOptions } from '../utils/IconUtils';
 
 export const Settings = () => {
   const [settings, setSettings] = window.SP_REACT.useState(loadSettings());
@@ -72,6 +73,48 @@ export const Settings = () => {
         ),
         settings.showLibraryCount && window.SP_REACT.createElement(
           PanelSectionRow,
+          { key: "library-icon-row" },
+          window.SP_REACT.createElement(
+            DropdownItem,
+            {
+              label: "Library Badge Icon",
+              description: "Choose the icon shown in the library badge",
+              rgOptions: iconOptions,
+              selectedOption: settings.libraryIconType,
+              onChange: (newValue: SingleDropdownOption) => {
+                const iconType = newValue.data as IconType;
+                const newSettings = {
+                  ...settings,
+                  libraryIconType: iconType
+                };
+                setSettings(newSettings);
+                saveSettings(newSettings);
+              }
+            }
+          )
+        ),
+        settings.showLibraryCount && window.SP_REACT.createElement(
+          PanelSectionRow,
+          { key: "enable-animation-row" },
+          window.SP_REACT.createElement(
+            ToggleField,
+            {
+              label: "Smooth Number Animation",
+              description: "Enable smooth animation when player count updates",
+              checked: settings.enableCountAnimation,
+              onChange: (value) => {
+                const newSettings = {
+                  ...settings,
+                  enableCountAnimation: value
+                };
+                setSettings(newSettings);
+                saveSettings(newSettings);
+              }
+            }
+          )
+        ),
+        settings.showLibraryCount && window.SP_REACT.createElement(
+          PanelSectionRow,
           { key: "size-row" },
           window.SP_REACT.createElement(
             SliderField,
@@ -96,6 +139,26 @@ export const Settings = () => {
                 { notchIndex: 8, label: "Large" }
               ],
               showValue: true
+            }
+          )
+        ),
+        settings.showLibraryCount && window.SP_REACT.createElement(
+          PanelSectionRow,
+          { key: "hide-library-online-text-row" },
+          window.SP_REACT.createElement(
+            ToggleField,
+            {
+              label: "Hide 'Online' Text in Library",
+              description: "Show only the player count number in library view",
+              checked: settings.hideLibraryOnlineText,
+              onChange: (value) => {
+                const newSettings = {
+                  ...settings,
+                  hideLibraryOnlineText: value
+                };
+                setSettings(newSettings);
+                saveSettings(newSettings);
+              }
             }
           )
         ),
@@ -140,6 +203,48 @@ export const Settings = () => {
                 const newSettings = {
                   ...settings,
                   showStoreCount: value
+                };
+                setSettings(newSettings);
+                saveSettings(newSettings);
+              }
+            }
+          )
+        ),
+        settings.showStoreCount && window.SP_REACT.createElement(
+          PanelSectionRow,
+          { key: "store-icon-row" },
+          window.SP_REACT.createElement(
+            DropdownItem,
+            {
+              label: "Store Footer Icon",
+              description: "Choose the icon shown in the store footer",
+              rgOptions: iconOptions,
+              selectedOption: settings.storeIconType,
+              onChange: (newValue: SingleDropdownOption) => {
+                const iconType = newValue.data as IconType;
+                const newSettings = {
+                  ...settings,
+                  storeIconType: iconType
+                };
+                setSettings(newSettings);
+                saveSettings(newSettings);
+              }
+            }
+          )
+        ),
+        settings.showStoreCount && window.SP_REACT.createElement(
+          PanelSectionRow,
+          { key: "hide-store-online-text-row" },
+          window.SP_REACT.createElement(
+            ToggleField,
+            {
+              label: "Hide 'Online' Text in Store",
+              description: "Show only the player count number in store view",
+              checked: settings.hideStoreOnlineText,
+              onChange: (value) => {
+                const newSettings = {
+                  ...settings,
+                  hideStoreOnlineText: value
                 };
                 setSettings(newSettings);
                 saveSettings(newSettings);
@@ -236,6 +341,7 @@ export const Settings = () => {
         )
       ]
     ),
+
     // Reset to Default Button Section
     window.SP_REACT.createElement(
       PanelSection,
