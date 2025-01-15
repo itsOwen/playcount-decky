@@ -11,7 +11,7 @@
 - **Real-Time Data**: View live player counts for your Steam Library games.  
 - **Steam Store Integration**: Displays live player counts directly on Steam Store pages.  
 - **User-Friendly Interface**: Clean, minimal, and non-intrusive design.  
-- **Customizable**: Adjust settings like font size, update frequency, and display preferences.  
+- **Customizable**: Adjust settings like font size, location, update frequency, and display preferences and many more.
 
 ---
 
