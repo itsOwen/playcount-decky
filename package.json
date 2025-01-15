@@ -1,6 +1,6 @@
 {
   "name": "playcount-decky",
-  "version": "1.4",
+  "version": "1.5",
   "description": "A Steam Deck plugin that shows current player counts for your steam games.",
   "type": "module",
   "scripts": {

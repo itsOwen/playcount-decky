@@ -1,4 +1,5 @@
 export type BadgePosition = 'top-right' | 'top-left';
+export type IconType = 'dot' | 'signal' | 'wifi' | 'globe' | 'users' | 'gamepad' | 'power';
 
 export interface Settings {
   badgePosition: BadgePosition;
@@ -9,6 +10,11 @@ export interface Settings {
   storeTextSize: number;
   storeTextPosition: number;
   storeTextBottom: number;
+  hideLibraryOnlineText: boolean;
+  hideStoreOnlineText: boolean;
+  libraryIconType: IconType;
+  storeIconType: IconType;
+  enableCountAnimation: boolean;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -19,10 +25,14 @@ export const DEFAULT_SETTINGS: Settings = {
   showStoreCount: true,
   storeTextSize: 1,
   storeTextPosition: 20,
-  storeTextBottom: 2
+  storeTextBottom: 2,
+  hideLibraryOnlineText: false,
+  hideStoreOnlineText: false,
+  libraryIconType: 'dot',
+  storeIconType: 'users',
+  enableCountAnimation: true
 };
 
-// Using a custom event for settings changes
 const SETTINGS_CHANGE_EVENT = 'playcount-settings-change';
 
 export function loadSettings(): Settings {
@@ -40,7 +50,6 @@ export function loadSettings(): Settings {
 export function saveSettings(settings: Settings): void {
   try {
     localStorage.setItem('playCountSettings', JSON.stringify(settings));
-    // Dispatch custom event
     window.dispatchEvent(new CustomEvent(SETTINGS_CHANGE_EVENT, { detail: settings }));
   } catch (error) {
     console.error('Failed to save settings:', error);

@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
 import { fetchNoCors } from '@decky/api';
 import { Navigation, staticClasses } from '@decky/ui';
-import { FaUsers } from "react-icons/fa";
 import { CACHE } from '../utils/Cache';
 import { loadSettings, subscribeToSettings } from '../utils/Settings';
+import { getIconComponent } from '../utils/IconUtils';
 
 interface SteamPlayerResponse {
   response: {
@@ -92,28 +92,34 @@ export const PlayerCount = () => {
         
         if (data.response.result === 1) {
           const formattedCount = new Intl.NumberFormat().format(data.response.player_count);
+          const displayCount = typeof formattedCount === 'object' ? "Loading..." : formattedCount;
+          
           setPlayerCount(
             window.SP_REACT.createElement('span', { style: { display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '1px' } }, [
               '|',
-              window.SP_REACT.createElement(FaUsers, { 
-                key: "users-icon",
-                size: Math.floor(14 * settings.storeTextSize),
-                style: { marginLeft: '8px', color: '#4CAF50' }
-              }),
+              window.SP_REACT.createElement(
+                getIconComponent(settings.storeIconType, '#4CAF50', Math.floor(14 * settings.storeTextSize)).component,
+                {
+                  ...getIconComponent(settings.storeIconType, '#4CAF50', Math.floor(14 * settings.storeTextSize)).props,
+                  key: "status-icon",
+                  style: { 
+                    marginLeft: '8px',
+                    filter: 'drop-shadow(0 0 2px rgba(76,175,80,0.5))'
+                  }
+                }
+              ),
               window.SP_REACT.createElement('span', { 
                 style: { textTransform: 'none' } 
-              }, `${formattedCount} Online`)
+              }, settings.hideStoreOnlineText ? displayCount : `${displayCount} Online`)
             ])
           );
-          setIsVisible(true);
+          setIsVisible(true);      
         } else {
-          setPlayerCount("No player data available");
-          setIsVisible(true);
+          setIsVisible(false); // Hide when no data available
         }
       } catch (error) {
         if (!mountedRef.current) return;
-        setPlayerCount(error instanceof Error ? `Error: ${error.message}` : "Error fetching player count");
-        setIsVisible(true);
+        setIsVisible(false); // Hide on error
       }
     };
 
@@ -129,11 +135,10 @@ export const PlayerCount = () => {
         clearInterval(interval);
       }
     };
-  }, [appId, settings.storeTextSize]);
+  }, [appId, settings.storeTextSize, settings.storeIconType, settings.hideStoreOnlineText]);
 
   if (!isVisible || !settings.showStoreCount) return null;
   
-  // Only show the footer text on store pages
   const isOnStorePage = window.location.pathname.includes('/steamweb');
   if (!isOnStorePage) return null;
 
