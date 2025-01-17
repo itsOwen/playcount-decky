@@ -58,33 +58,29 @@
 
 ### Game Library View
 
-<img src="/assets/PlayCount2.jpg" alt="Game Library View"/> 
-
-<img src="/assets/PlayCount1.jpg" alt="Game Library View"/>
+| | |
+|:---:|:---:|
+| <img src="/assets/PlayCount2.jpg" alt="Game Library View" width="400"/> | <img src="/assets/PlayCount1.jpg" alt="Game Library View" width="400"/> |
 
 ### Store Page Integration
 
-<img src="/assets/PlayCount.jpg" alt="Store Page Integration"/>
+| | |
+|:---:|:---:|
+| <img src="/assets/PlayCount.jpg" alt="Store Page Integration" width="400"/> | 
 
-### Advanced PlayCount Analytics
+### Advanced PlayCount Stats
 
-<img src="/assets/PlayCountStats1.jpg" alt="PlayCountStats 1"/> 
-
-<img src="/assets/PlayCountStats2.jpg" alt="PlayCountStats 2"/> 
-
-<img src="/assets/PlayCountStats3.jpg" alt="PlayCountStats 3"/> 
-
-<img src="/assets/PlayCountStats4.jpg" alt="PlayCountStats 4"/> 
+| | |
+|:---:|:---:|
+| <img src="/assets/PlayCountStats1.jpg" alt="PlayCountStats 1" width="400"/> | <img src="/assets/PlayCountStats2.jpg" alt="PlayCountStats 2" width="400"/> |
+| <img src="/assets/PlayCountStats3.jpg" alt="PlayCountStats 3" width="400"/> | <img src="/assets/PlayCountStats4.jpg" alt="PlayCountStats 4" width="400"/> | 
 
 ### Settings
 
-<img src="/assets/settings1.png" alt="Settings 1"/> 
-
-<img src="/assets/settings2.png" alt="Settings 2"/> 
-
-<img src="/assets/settings3.png" alt="Settings 1"/> 
-
-<img src="/assets/settings4.png" alt="Settings 1"/> 
+| | |
+|:---:|:---:|
+| <img src="/assets/settings1.png" alt="Settings 1" width="400"/> | <img src="/assets/settings2.png" alt="Settings 2" width="400"/> |
+| <img src="/assets/settings3.png" alt="Settings 3" width="400"/> | <img src="/assets/settings4.png" alt="Settings 4" width="400"/> |
 
 ---
 
@@ -203,4 +199,4 @@ If you find PlayCount helpful, consider supporting the project:
 - 💡 Suggest new features  
 - 🤝 Contribute to the code  
 
-Let’s build something awesome together!  
+Let's build something awesome together!
