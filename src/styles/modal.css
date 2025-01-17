@@ -1,0 +1,39 @@
+.stats-page {
+  padding: 16px;
+}
+
+.stats-page h2 {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+
+.stats-page .section {
+  margin-bottom: 24px;
+}
+
+.stats-page h3 {
+  font-size: 1.2em;
+  margin-bottom: 8px;
+  color: #B4C7DC;
+}
+
+.stats-page p {
+  margin: 4px 0;
+  font-size: 1.1em;
+}
+
+.charts-page {
+  padding: 16px;
+  height: 400px;
+}
+
+.recharts-wrapper {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.recharts-tooltip-wrapper {
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 4px;
+  padding: 8px;
+}

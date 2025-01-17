@@ -9,6 +9,7 @@ import {
 } from '@decky/ui';
 import { BadgePosition, loadSettings, saveSettings, DEFAULT_SETTINGS, IconType } from '../utils/Settings';
 import { iconOptions } from '../utils/IconUtils';
+import { getColorSlider } from './ColorPicker';
 
 export const Settings = () => {
   const [settings, setSettings] = window.SP_REACT.useState(loadSettings());
@@ -185,6 +186,57 @@ export const Settings = () => {
       ]
     ),
 
+    window.SP_REACT.createElement(
+      PanelSection,
+      { title: "Badge Colors", key: "badge-colors" },
+      [
+        window.SP_REACT.createElement(
+          PanelSectionRow,
+          { key: "use-custom-colors-row" },
+          window.SP_REACT.createElement(
+            ToggleField,
+            {
+              label: "Use Custom Colors",
+              description: "Override default badge colors",
+              checked: settings.useCustomColors,
+              onChange: (value) => {
+                const newSettings = {
+                  ...settings,
+                  useCustomColors: value
+                };
+                setSettings(newSettings);
+                saveSettings(newSettings);
+              }
+            }
+          )
+        ),
+        settings.useCustomColors && window.SP_REACT.createElement(
+          PanelSectionRow,
+          { key: "badge-color-row" },
+          getColorSlider("Badge Color", settings.customBadgeColor, (color) => {
+            const newSettings = {
+              ...settings,
+              customBadgeColor: color
+            };
+            setSettings(newSettings);
+            saveSettings(newSettings);
+          })
+        ),
+        settings.useCustomColors && window.SP_REACT.createElement(
+          PanelSectionRow,
+          { key: "text-color-row" },
+          getColorSlider("Text Color", settings.customTextColor, (color) => {
+            const newSettings = {
+              ...settings,
+              customTextColor: color
+            };
+            setSettings(newSettings);
+            saveSettings(newSettings);
+          })
+        )
+      ]
+    ),
+
     // Store Footer Settings Section
     window.SP_REACT.createElement(
       PanelSection,
@@ -342,7 +394,7 @@ export const Settings = () => {
       ]
     ),
 
-    // Reset to Default Button Section
+    // Reset Settings Section
     window.SP_REACT.createElement(
       PanelSection,
       { title: "Reset Settings", key: "reset-settings" },

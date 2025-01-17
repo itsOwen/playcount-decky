@@ -15,6 +15,9 @@ export interface Settings {
   libraryIconType: IconType;
   storeIconType: IconType;
   enableCountAnimation: boolean;
+  useCustomColors: boolean;
+  customBadgeColor: string;
+  customTextColor: string;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -30,7 +33,10 @@ export const DEFAULT_SETTINGS: Settings = {
   hideStoreOnlineText: false,
   libraryIconType: 'dot',
   storeIconType: 'users',
-  enableCountAnimation: true
+  enableCountAnimation: true,
+  useCustomColors: false,
+  customBadgeColor: '#4B9EEA',
+  customTextColor: '#FFFFFF'
 };
 
 const SETTINGS_CHANGE_EVENT = 'playcount-settings-change';
