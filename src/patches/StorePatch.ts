@@ -32,14 +32,42 @@ const History: {
 export function patchStore(): () => void {
   if (History && History.listen) {
     let oldUrl = "";
+    let pollTimer: ReturnType<typeof setTimeout> | null = null;
+    let lastKnownAppId: string | null = null;
+
+    const clearPoll = () => {
+      if (pollTimer) {
+        clearTimeout(pollTimer);
+        pollTimer = null;
+      }
+    };
+
+    const startPoll = () => {
+      clearPoll();
+      pollTimer = setTimeout(() => getCurrentAppID(), 1500);
+    };
+
+    const handleFocus = async () => {
+      if (window.location.pathname.includes('/steamweb') && lastKnownAppId) {
+        await CACHE.setValue(CACHE.APP_ID_KEY, lastKnownAppId);
+        getCurrentAppID();
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+
     const unlisten = History.listen(async (info) => {
       try {
         if (info.pathname === '/steamweb') {
           getCurrentAppID();
         } else {
+          clearPoll();
+          lastKnownAppId = null;
           CACHE.setValue(CACHE.APP_ID_KEY, "");
         }
       } catch (err) {
+        clearPoll();
+        lastKnownAppId = null;
         CACHE.setValue(CACHE.APP_ID_KEY, "");
       }
     });
@@ -57,40 +85,52 @@ export function patchStore(): () => void {
       const storeTab = tabs.find((tab) =>
         tab.url.includes('https://store.steampowered.com')
       );
+      
       const itadTab = tabs.find((tab) =>
         tab.url.includes('https://isthereanydeal.com')
       );
 
       if (itadTab) {
-        oldUrl = "" // This is necessary so that the appID will be set again after closing the external browser
-        setTimeout(() => getCurrentAppID(), 1500)
-        return
+        oldUrl = "";
+        startPoll();
+        return;
       }
 
-      if (storeTab?.url && storeTab.url !== oldUrl) {
-        oldUrl = storeTab.url;
+      if (storeTab?.url) {
         const appId = storeTab.url.match(/\/app\/([\d]+)\/?/)?.[1];
-        if (appId) {
-          CACHE.setValue(CACHE.APP_ID_KEY, appId);
-          // As long as the steam store is open do refreshes
-          setTimeout(() => getCurrentAppID(), 1500)
-        } else {
-          CACHE.setValue(CACHE.APP_ID_KEY, "");
-          // As long as the steam store is open do refreshes
-          setTimeout(() => getCurrentAppID(), 1500)
+        
+        if (storeTab.url !== oldUrl || !lastKnownAppId) {
+          oldUrl = storeTab.url;
+          if (appId) {
+            lastKnownAppId = appId;
+            await CACHE.setValue(CACHE.APP_ID_KEY, appId);
+          } else {
+            lastKnownAppId = null;
+            await CACHE.setValue(CACHE.APP_ID_KEY, "");
+          }
         }
-      }
-      // If tabs do not contain steamstore
-      if (!storeTab) {
-        CACHE.setValue(CACHE.APP_ID_KEY, "")
-      }
-      else {
-        setTimeout(() => getCurrentAppID(), 1500)
+        
+        startPoll();
+      } else {
+        if (lastKnownAppId && document.hasFocus()) {
+          await CACHE.setValue(CACHE.APP_ID_KEY, lastKnownAppId);
+        } else {
+          clearPoll();
+          lastKnownAppId = null;
+          await CACHE.setValue(CACHE.APP_ID_KEY, "");
+        }
       }
     };
 
-    return unlisten;
+    return () => {
+      unlisten();
+      clearPoll();
+      window.removeEventListener('focus', handleFocus);
+      lastKnownAppId = null;
+      CACHE.setValue(CACHE.APP_ID_KEY, "");
+    };
   }
+
   return () => {
     CACHE.setValue(CACHE.APP_ID_KEY, "");
   };

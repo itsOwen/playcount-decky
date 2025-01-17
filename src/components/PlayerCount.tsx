@@ -35,6 +35,13 @@ export const PlayerCount = () => {
       setAppId(id);
     }
 
+    const handleFocus = () => {
+      if (window.location.pathname.includes('/steamweb')) {
+        loadAppId();
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
     loadAppId();
     CACHE.subscribe("PlayerCount", loadAppId);
 
@@ -59,12 +66,13 @@ export const PlayerCount = () => {
       mountedRef.current = false;
       CACHE.unsubscribe("PlayerCount");
       unsubscribeSettings();
-      setIsVisible(false);
-      setAppId(undefined);
-      setPlayerCount("");
+      window.removeEventListener('focus', handleFocus);
       window.removeEventListener('popstate', handleRouteChange);
       window.removeEventListener('pushstate', handleRouteChange);
       window.removeEventListener('replacestate', handleRouteChange);
+      setIsVisible(false);
+      setAppId(undefined);
+      setPlayerCount("");
     };
   }, []);
 
@@ -89,37 +97,44 @@ export const PlayerCount = () => {
         if (!mountedRef.current) return;
 
         const data: SteamPlayerResponse = JSON.parse(await response.text());
-        
+
         if (data.response.result === 1) {
           const formattedCount = new Intl.NumberFormat().format(data.response.player_count);
           const displayCount = typeof formattedCount === 'object' ? "Loading..." : formattedCount;
-          
+
           setPlayerCount(
-            window.SP_REACT.createElement('span', { style: { display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '1px' } }, [
+            window.SP_REACT.createElement('span', { 
+              style: { 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px', 
+                marginLeft: '1px' 
+              } 
+            }, [
               '|',
               window.SP_REACT.createElement(
                 getIconComponent(settings.storeIconType, '#4CAF50', Math.floor(14 * settings.storeTextSize)).component,
                 {
                   ...getIconComponent(settings.storeIconType, '#4CAF50', Math.floor(14 * settings.storeTextSize)).props,
                   key: "status-icon",
-                  style: { 
+                  style: {
                     marginLeft: '8px',
                     filter: 'drop-shadow(0 0 2px rgba(76,175,80,0.5))'
                   }
                 }
               ),
-              window.SP_REACT.createElement('span', { 
-                style: { textTransform: 'none' } 
+              window.SP_REACT.createElement('span', {
+                style: { textTransform: 'none' }
               }, settings.hideStoreOnlineText ? displayCount : `${displayCount} Online`)
             ])
           );
-          setIsVisible(true);      
+          setIsVisible(true);
         } else {
-          setIsVisible(false); // Hide when no data available
+          setIsVisible(false);
         }
       } catch (error) {
         if (!mountedRef.current) return;
-        setIsVisible(false); // Hide on error
+        setIsVisible(false);
       }
     };
 
@@ -138,7 +153,7 @@ export const PlayerCount = () => {
   }, [appId, settings.storeTextSize, settings.storeIconType, settings.hideStoreOnlineText]);
 
   if (!isVisible || !settings.showStoreCount) return null;
-  
+
   const isOnStorePage = window.location.pathname.includes('/steamweb');
   if (!isOnStorePage) return null;
 

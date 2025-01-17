@@ -1,3 +1,7 @@
+declare module 'recharts' {
+  export * from 'recharts/types';
+}
+
 declare module "*.svg" {
   const content: string;
   export default content;

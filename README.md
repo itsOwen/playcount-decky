@@ -8,22 +8,83 @@
 
 ## ✨ Features
 
-- **Real-Time Data**: View live player counts for your Steam Library games.  
-- **Steam Store Integration**: Displays live player counts directly on Steam Store pages.  
-- **User-Friendly Interface**: Clean, minimal, and non-intrusive design.  
-- **Customizable**: Adjust settings like font size, location, update frequency, and display preferences and many more.
+### Display Features
+- **Real-Time Data**: View live player counts for your Steam Library games
+- **Steam Store Integration**: Displays live player counts directly on Steam Store pages
+- **User-Friendly Interface**: Clean, minimal, and non-intrusive design
+- **Animated Counter**: Smooth number transitions when player counts update
+- **Custom Icons**: Choose from multiple icon styles (dot, signal, wifi, globe, users, gamepad, power)
+- **Position Options**: Place the badge in different locations (top-right, top-left)
+- **Color-Coded Status**: Different colors based on player count ranges (platinum, gold, silver, bronze)
+
+### Advanced Statistics
+- **Detailed Analysis**: View comprehensive player statistics including:
+  - Current player count
+  - 24-hour peak
+  - 7-day and 30-day averages
+  - Historical trends
+  - All-time peak with date
+- **Trend Analysis**: Advanced metrics including:
+  - Volatility scoring
+  - Stability analysis
+  - Growth predictions
+  - Hourly trends
+  - Weekend vs. weekday patterns
+
+### Customization Options
+- **Badge Customization**:
+  - Adjustable size
+  - Rounded or sharp corners
+  - Custom colors for badge and text
+  - Show/hide "Online" text
+  - Multiple icon options
+- **Store Display Settings**:
+  - Adjustable text size
+  - Customizable position
+  - Vertical alignment options
+  - Show/hide "Online" text
+  - Icon selection
+
+### Interactive Features
+- **Click Actions**: 
+  - Quick access to detailed stats modal
+  - Direct link to SteamCharts (Ctrl+Click)
+  - Interactive charts and graphs
+- **Cached Data**: Efficient data storage to reduce API calls
 
 ---
 
 ## 📸 Screenshots  
 
 ### Game Library View
+
 <img src="/assets/PlayCount2.jpg" alt="Game Library View"/> 
 
 <img src="/assets/PlayCount1.jpg" alt="Game Library View"/>
 
-### Store Page Integration  
-<img src="/assets/PlayCount.jpg" alt="Store Page Integration"/>  
+### Store Page Integration
+
+<img src="/assets/PlayCount.jpg" alt="Store Page Integration"/>
+
+### Advanced PlayCount Analytics
+
+<img src="/assets/PlayCountStats1.jpg" alt="PlayCountStats 1"/> 
+
+<img src="/assets/PlayCountStats2.jpg" alt="PlayCountStats 2"/> 
+
+<img src="/assets/PlayCountStats3.jpg" alt="PlayCountStats 3"/> 
+
+<img src="/assets/PlayCountStats4.jpg" alt="PlayCountStats 4"/> 
+
+### Settings
+
+<img src="/assets/settings1.png" alt="Settings 1"/> 
+
+<img src="/assets/settings2.png" alt="Settings 2"/> 
+
+<img src="/assets/settings3.png" alt="Settings 1"/> 
+
+<img src="/assets/settings4.png" alt="Settings 1"/> 
 
 ---
 

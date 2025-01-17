@@ -1,21 +1,26 @@
-import { Navigation } from '@decky/ui';
+import { Navigation, showModal, Button } from '@decky/ui';
 import { loadSettings, BadgePosition, subscribeToSettings } from '../utils/Settings';
 import { getIconComponent } from '../utils/IconUtils';
 import { AnimatedCounter } from './AnimatedCounter';
+import { PlayerStatsModal } from './PlayerStats';
 
 interface PlayerBadgeProps {
   count: string;
   appId?: string;
 }
 
-const getBadgeColor = (count: string): string => {
+const getBadgeColor = (count: string, settings: any): string => {
+  if (settings.useCustomColors) {
+    return settings.customBadgeColor;
+  }
+
   if (!count || count === "No data" || count === "Error") return '#686868';
   const playerCount = parseInt(count.replace(/,/g, ''));
-  if (playerCount > 50000) return '#00ECEC'; // Platinum - Bright Turquoise
-  if (playerCount > 10000) return '#CFB53B'; // Gold
-  if (playerCount > 5000) return '#A6A6A6';  // Silver
-  if (playerCount > 1000) return '#CD7F32';  // Bronze
-  return '#4B9EEA';                          // Base - Electric Blue
+  if (playerCount > 50000) return '#e80e0e';
+  if (playerCount > 10000) return '#CFB53B';
+  if (playerCount > 5000) return '#A6A6A6';
+  if (playerCount > 1000) return '#CD7F32';
+  return '#4B9EEA';
 };
 
 const getPositionStyle = (position: BadgePosition) => {
@@ -36,17 +41,35 @@ export const PlayerBadge = ({ count, appId }: PlayerBadgeProps) => {
     return () => unsubscribe();
   }, []);
 
-  // Return null if there's an error or no data
   if (!settings.showLibraryCount || count === "Error" || count === "No data") return null;
 
   const positionStyle = getPositionStyle(settings.badgePosition);
   const baseSize = 12;
-  const iconSize = 14 * settings.badgeSize; // Increased base icon size from 8 to 14
+  const iconSize = 14 * settings.badgeSize;
+  const bgColor = getBadgeColor(count, settings);
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (appId) {
+      if (e.ctrlKey || e.metaKey) {
+        Navigation.NavigateToExternalWeb(`https://steamcharts.com/app/${appId}`);
+      } else {
+        showModal(
+          window.SP_REACT.createElement(PlayerStatsModal, {
+            appId: appId,
+            closeModal: () => {
+              Navigation.CloseSideMenus();
+            }
+          })
+        );
+      }
+    }
+  };
 
   const renderCount = () => {
-    // Handle the case where count might be an object
     if (typeof count === 'object' || !count) return "Loading...";
-    
+
     const isLoading = count === "Loading...";
 
     if (settings.enableCountAnimation) {
@@ -75,56 +98,58 @@ export const PlayerBadge = ({ count, appId }: PlayerBadgeProps) => {
     'div',
     {
       className: "playerBadge",
-      onClick: (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (appId) {
-          Navigation.NavigateToExternalWeb(`https://steamcharts.com/app/${appId}`);
-        }
-      },
       style: {
         position: 'absolute',
         ...positionStyle,
-        display: 'inline-flex',
-        alignItems: 'center',
-        backgroundColor: getBadgeColor(count),
-        padding: `${4 * settings.badgeSize}px ${8 * settings.badgeSize}px`,
-        borderRadius: settings.roundedCorners ? `${12 * settings.badgeSize}px` : '0px',
-        cursor: 'pointer',
-        fontSize: `${baseSize * settings.badgeSize}px`,
-        color: '#ffffff',
         zIndex: 1000,
-        transition: 'all 0.2s ease',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
       }
     },
-    [
-      window.SP_REACT.createElement(
-        'div',
-        {
-          key: "status-icon",
-          style: {
-            display: 'flex',
-            alignItems: 'center',
-            marginRight: `${6 * settings.badgeSize}px`,
-          }
+    window.SP_REACT.createElement(
+      Button as any,
+      {
+        style: {
+          display: 'inline-flex',
+          alignItems: 'center',
+          padding: `${4 * settings.badgeSize}px ${8 * settings.badgeSize}px`,
+          backgroundColor: bgColor,
+          borderRadius: settings.roundedCorners ? `${12 * settings.badgeSize}px` : '0px',
+          fontSize: `${baseSize * settings.badgeSize}px`,
+          color: settings.useCustomColors ? settings.customTextColor : '#ffffff',
+          minWidth: 'auto',
+          transition: 'all 0.2s ease',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+          border: 'none'
         },
+        onClick: handleClick
+      },
+      [
         window.SP_REACT.createElement(
-          getIconComponent(settings.libraryIconType, '#4CAF50', iconSize).component,
+          'div',
           {
-            ...getIconComponent(settings.libraryIconType, '#4CAF50', iconSize).props,
-            style: { 
-              filter: 'drop-shadow(0 0 2px rgba(76,175,80,0.5))',
-              minWidth: `${iconSize}px`
+            key: "status-icon",
+            style: {
+              display: 'flex',
+              alignItems: 'center',
+              marginRight: `${6 * settings.badgeSize}px`,
             }
-          }
+          },
+          window.SP_REACT.createElement(
+            getIconComponent(settings.libraryIconType, '#4CAF50', iconSize).component,
+            {
+              ...getIconComponent(settings.libraryIconType, '#4CAF50', iconSize).props,
+              style: {
+                filter: 'drop-shadow(0 0 2px rgba(76,175,80,0.5))',
+                minWidth: `${iconSize}px`
+              }
+            }
+          )
+        ),
+        window.SP_REACT.createElement(
+          'span',
+          { key: "text" },
+          renderCount()
         )
-      ),
-      window.SP_REACT.createElement(
-        'span',
-        { key: "text" },
-        renderCount()
-      )
-    ]
+      ]
+    )
   );
 };
