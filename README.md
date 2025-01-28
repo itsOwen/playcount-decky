@@ -54,6 +54,10 @@
 
 ---
 
+## 🎥 Video Demo
+
+[![Watch the video](https://img.youtube.com/vi/cb9RFJbFYMg/0.jpg)](https://youtu.be/cb9RFJbFYMg)
+
 ## 📸 Screenshots  
 
 ### Game Library View
