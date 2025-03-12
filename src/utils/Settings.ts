@@ -18,6 +18,7 @@ export interface Settings {
   useCustomColors: boolean;
   customBadgeColor: string;
   customTextColor: string;
+  customIconColor: string;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -36,7 +37,8 @@ export const DEFAULT_SETTINGS: Settings = {
   enableCountAnimation: true,
   useCustomColors: false,
   customBadgeColor: '#4B9EEA',
-  customTextColor: '#FFFFFF'
+  customTextColor: '#FFFFFF',
+  customIconColor: '#4CAF50'
 };
 
 const SETTINGS_CHANGE_EVENT = 'playcount-settings-change';

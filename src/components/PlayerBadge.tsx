@@ -33,6 +33,23 @@ const getPositionStyle = (position: BadgePosition) => {
   }
 };
 
+const getRgbFromHex = (hex: string): string => {
+  const cleanHex = hex.replace('#', '');
+  let r, g, b;
+  
+  if (cleanHex.length === 3) {
+    r = parseInt(cleanHex[0] + cleanHex[0], 16);
+    g = parseInt(cleanHex[1] + cleanHex[1], 16);
+    b = parseInt(cleanHex[2] + cleanHex[2], 16);
+  } else {
+    r = parseInt(cleanHex.slice(0, 2), 16);
+    g = parseInt(cleanHex.slice(2, 4), 16);
+    b = parseInt(cleanHex.slice(4, 6), 16);
+  }
+  
+  return `${r}, ${g}, ${b}`;
+};
+
 export const PlayerBadge = ({ count, appId }: PlayerBadgeProps) => {
   const [settings, setSettings] = window.SP_REACT.useState(loadSettings());
 
@@ -47,6 +64,9 @@ export const PlayerBadge = ({ count, appId }: PlayerBadgeProps) => {
   const baseSize = 12;
   const iconSize = 14 * settings.badgeSize;
   const bgColor = getBadgeColor(count, settings);
+  
+  const iconColor = settings.useCustomColors ? settings.customIconColor : '#4CAF50';
+  const iconRgb = getRgbFromHex(iconColor);
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -134,11 +154,11 @@ export const PlayerBadge = ({ count, appId }: PlayerBadgeProps) => {
             }
           },
           window.SP_REACT.createElement(
-            getIconComponent(settings.libraryIconType, '#4CAF50', iconSize).component,
+            getIconComponent(settings.libraryIconType, iconColor, iconSize).component,
             {
-              ...getIconComponent(settings.libraryIconType, '#4CAF50', iconSize).props,
+              ...getIconComponent(settings.libraryIconType, iconColor, iconSize).props,
               style: {
-                filter: 'drop-shadow(0 0 2px rgba(76,175,80,0.5))',
+                filter: `drop-shadow(0 0 2px rgba(${iconRgb}, 0.5))`,
                 minWidth: `${iconSize}px`
               }
             }
