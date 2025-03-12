@@ -12,6 +12,23 @@ interface SteamPlayerResponse {
   }
 }
 
+const getRgbFromHex = (hex: string): string => {
+  const cleanHex = hex.replace('#', '');
+  let r, g, b;
+  
+  if (cleanHex.length === 3) {
+    r = parseInt(cleanHex[0] + cleanHex[0], 16);
+    g = parseInt(cleanHex[1] + cleanHex[1], 16);
+    b = parseInt(cleanHex[2] + cleanHex[2], 16);
+  } else {
+    r = parseInt(cleanHex.slice(0, 2), 16);
+    g = parseInt(cleanHex.slice(2, 4), 16);
+    b = parseInt(cleanHex.slice(4, 6), 16);
+  }
+  
+  return `${r}, ${g}, ${b}`;
+};
+
 export const PlayerCount = () => {
   const [appId, setAppId] = useState<string | undefined>(undefined);
   const [playerCount, setPlayerCount] = useState<string | JSX.Element>("");
@@ -102,6 +119,10 @@ export const PlayerCount = () => {
           const formattedCount = new Intl.NumberFormat().format(data.response.player_count);
           const displayCount = typeof formattedCount === 'object' ? "Loading..." : formattedCount;
 
+          const iconColor = settings.useCustomColors ? settings.customIconColor : '#4CAF50';
+          const iconRgb = getRgbFromHex(iconColor);
+          const iconSize = Math.floor(14 * settings.storeTextSize);
+
           setPlayerCount(
             window.SP_REACT.createElement('span', { 
               style: { 
@@ -113,13 +134,13 @@ export const PlayerCount = () => {
             }, [
               '|',
               window.SP_REACT.createElement(
-                getIconComponent(settings.storeIconType, '#4CAF50', Math.floor(14 * settings.storeTextSize)).component,
+                getIconComponent(settings.storeIconType, iconColor, iconSize).component,
                 {
-                  ...getIconComponent(settings.storeIconType, '#4CAF50', Math.floor(14 * settings.storeTextSize)).props,
+                  ...getIconComponent(settings.storeIconType, iconColor, iconSize).props,
                   key: "status-icon",
                   style: {
                     marginLeft: '8px',
-                    filter: 'drop-shadow(0 0 2px rgba(76,175,80,0.5))'
+                    filter: `drop-shadow(0 0 2px rgba(${iconRgb}, 0.5))`
                   }
                 }
               ),
@@ -150,7 +171,7 @@ export const PlayerCount = () => {
         clearInterval(interval);
       }
     };
-  }, [appId, settings.storeTextSize, settings.storeIconType, settings.hideStoreOnlineText]);
+  }, [appId, settings.storeTextSize, settings.storeIconType, settings.hideStoreOnlineText, settings.useCustomColors, settings.customIconColor]);
 
   if (!isVisible || !settings.showStoreCount) return null;
 

@@ -102,7 +102,7 @@ export default definePlugin(() => {
             window.SP_REACT.createElement(SocialButton, {
               icon: window.SP_REACT.createElement(FaDiscord, { color: '#5865F2', size: 24 }),
               text: "Join our Discord",
-              url: "https://discord.gg/yourserver"
+              url: "https://discord.gg/M7Y5kfUea5"
             }),
             window.SP_REACT.createElement(SocialButton, {
               icon: window.SP_REACT.createElement(FaGithub, { color: '#ffffff', size: 24 }),

@@ -233,6 +233,18 @@ export const Settings = () => {
             setSettings(newSettings);
             saveSettings(newSettings);
           })
+        ),
+        settings.useCustomColors && window.SP_REACT.createElement(
+          PanelSectionRow,
+          { key: "icon-color-row" },
+          getColorSlider("Icon Color", settings.customIconColor, (color) => {
+            const newSettings = {
+              ...settings,
+              customIconColor: color
+            };
+            setSettings(newSettings);
+            saveSettings(newSettings);
+          })
         )
       ]
     ),
