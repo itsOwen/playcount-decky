@@ -56,7 +56,7 @@
 
 ## 🎥 Video Demo
 
-[![Watch the video](https://img.youtube.com/vi/cb9RFJbFYMg/0.jpg)](https://youtu.be/cb9RFJbFYMg)
+[![Watch the video](https://img.youtube.com/vi/-kPegdF-kqY/hqdefault.jpg)](https://www.youtube.com/watch?v=-kPegdF-kqY)
 
 ## 📸 Screenshots  
 
