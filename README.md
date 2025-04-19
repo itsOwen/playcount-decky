@@ -1,5 +1,6 @@
 # PlayCount 🎮 
 
+
 <img src="/assets/playcount-logo.png" alt="PlayCount Banner" width="500"/>
 
 **PlayCount** is a powerful plugin for the Steam Deck that displays real-time player counts for your Steam games. Stay informed about the active player base of any game in your library or while exploring the Steam Store. Enhance your gaming decisions with data at your fingertips! 👥
