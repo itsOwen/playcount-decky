@@ -15,6 +15,7 @@ export interface PlayerStats {
   allTimePeakDate: string;
   peak24h: number;
   weekendPeak: number;
+  weekendAvg: number;
   nightAvg: number;
   dayAvg: number;
   monthlyGrowth: number;

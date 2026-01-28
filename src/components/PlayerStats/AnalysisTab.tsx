@@ -24,8 +24,9 @@ export const AnalysisTab = ({ stats, isLoading }: AnalysisTabProps) => {
     }, 'Loading...');
   }
 
+  // Use consistent metrics (all averages) for fair comparison
   const pieData = [
-    { name: 'Weekend', value: stats.weekendPeak },
+    { name: 'Weekend', value: stats.weekendAvg },
     { name: 'Night', value: stats.nightAvg },
     { name: 'Day', value: stats.dayAvg }
   ];
@@ -49,7 +50,7 @@ export const AnalysisTab = ({ stats, isLoading }: AnalysisTabProps) => {
           }
         }, 'Most Active Times:'),
         window.SP_REACT.createElement('ul', { style: { paddingLeft: '15px', marginTop: '4px' } }, [
-          window.SP_REACT.createElement('li', null, `🎮 Weekend Peak: ${stats.weekendPeak.toLocaleString()} players`),
+          window.SP_REACT.createElement('li', null, `🎮 Weekend Avg: ${stats.weekendAvg.toLocaleString()} players`),
           window.SP_REACT.createElement('li', null, `🌙 Night Avg: ${stats.nightAvg.toLocaleString()} players`),
           window.SP_REACT.createElement('li', null, `☀️ Day Avg: ${stats.dayAvg.toLocaleString()} players`)
         ]),
@@ -63,15 +64,15 @@ export const AnalysisTab = ({ stats, isLoading }: AnalysisTabProps) => {
         }, 'Trend Analysis'),
         
         window.SP_REACT.createElement('ul', { style: { paddingLeft: '15px', marginTop: '4px' } }, [
-          window.SP_REACT.createElement('li', null, 
+          window.SP_REACT.createElement('li', null,
             `${stats.monthlyGrowth >= 0 ? '📈 Growing by' : '📉 Decreasing by'} ${Math.abs(stats.monthlyGrowth)}% month over month`
           ),
-          window.SP_REACT.createElement('li', null, 
-            `🔥 Highest growth in ${(() => {
-              const highest = Math.max(stats.weekendPeak, stats.nightAvg, stats.dayAvg);
-              if (highest === stats.weekendPeak) return 'weekends';
+          window.SP_REACT.createElement('li', null,
+            `🔥 Most active during ${(() => {
+              const highest = Math.max(stats.weekendAvg, stats.nightAvg, stats.dayAvg);
+              if (highest === stats.weekendAvg) return 'weekends';
               if (highest === stats.nightAvg) return 'nights';
-              return 'days';
+              return 'daytime';
             })()}`
           )
         ])        
@@ -93,15 +94,7 @@ export const AnalysisTab = ({ stats, isLoading }: AnalysisTabProps) => {
                 key: `cell-${index}`,
                 fill: COLORS[index % COLORS.length],
               })
-            ))),
-            window.SP_REACT.createElement('text', {
-              x: '50%',
-              y: '90%',
-              textAnchor: 'middle',
-              dominantBaseline: 'middle',
-              fontSize: '10px',
-              fill: '#B4C7DC'
-            }, 'Player Distribution')
+            )))
           ])
         )
       )

@@ -3,7 +3,7 @@
  * Provides reactive settings state with automatic persistence
  */
 
-import { loadSettings, saveSettings, subscribeToSettings, Settings } from '../utils/Settings';
+import { loadSettings, saveSettings, subscribeToSettings, Settings, DEFAULT_SETTINGS } from '../utils/Settings';
 
 type SettingsKey = keyof Settings;
 
@@ -55,9 +55,8 @@ export const useSettings = (): UseSettingsReturn => {
    * Reset settings to defaults
    */
   const resetSettings = window.SP_REACT.useCallback(() => {
-    const defaultSettings = loadSettings();
-    saveSettings(defaultSettings);
-    setSettings(defaultSettings);
+    saveSettings(DEFAULT_SETTINGS);
+    setSettings(DEFAULT_SETTINGS);
   }, []);
 
   return {

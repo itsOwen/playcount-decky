@@ -47,6 +47,7 @@ export const PlayerStatsModal = ({ appId, closeModal }: PlayerStatsModalProps) =
         allTimePeakDate: '',
         peak24h: 0,
         weekendPeak: 0,
+        weekendAvg: 0,
         nightAvg: 0,
         dayAvg: 0,
         monthlyGrowth: 0,
@@ -81,6 +82,9 @@ export const PlayerStatsModal = ({ appId, closeModal }: PlayerStatsModalProps) =
         // Calculate weekend data
         const weekendData = last7Days.filter(item => [0, 6].includes(new Date(item.timestamp).getDay()));
         const weekendPeak = Math.max(...weekendData.map(item => item.players));
+        const weekendAvg = weekendData.length > 0
+            ? Math.round(weekendData.reduce((sum, item) => sum + item.players, 0) / weekendData.length)
+            : 0;
 
         // Calculate night and day averages
         const nightData = last7Days.filter(item => {
@@ -114,6 +118,7 @@ export const PlayerStatsModal = ({ appId, closeModal }: PlayerStatsModalProps) =
             allTimePeakDate: peakDate,
             peak24h,
             weekendPeak,
+            weekendAvg,
             nightAvg,
             dayAvg,
             monthlyGrowth: monthGrowth,
