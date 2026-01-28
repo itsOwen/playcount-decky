@@ -1,21 +1,37 @@
-import { useEffect, useRef, useState } from 'react';
+/**
+ * AnimatedCounter component - smooth number animation for player counts
+ */
 
-interface AnimatedCounterProps {
-  finalValue: number | string;
-  duration?: number;
-  isLoading?: boolean;
-}
+import { formatPlayerCount, parseFormattedCount } from '../utils/api';
+import { TIMING } from '../constants';
+import type { AnimatedCounterProps } from '../types/index';
 
-export const AnimatedCounter = ({ finalValue, duration = 1000, isLoading = false }: AnimatedCounterProps) => {
-  const [displayValue, setDisplayValue] = useState(0);
-  const [previousValue, setPreviousValue] = useState(0);
+const { useEffect, useRef, useState } = window.SP_REACT;
+
+/**
+ * Easing function for smooth animation
+ */
+const easeOutCubic = (progress: number): number => {
+  return 1 - Math.pow(1 - progress, 3);
+};
+
+export const AnimatedCounter = ({
+  finalValue,
+  duration = TIMING.ANIMATION_DURATION,
+  isLoading = false,
+}: AnimatedCounterProps) => {
+  const [displayValue, setDisplayValue] = useState<number>(0);
+  const [previousValue, setPreviousValue] = useState<number>(0);
   const animationRef = useRef<number>();
   const startTimeRef = useRef<number>();
 
+  /**
+   * Parse final value to number
+   */
   const getFinalNumber = (): number => {
     if (typeof finalValue === 'number') return finalValue;
     if (typeof finalValue === 'string') {
-      return parseInt(finalValue.replace(/,/g, '')) || 0;
+      return parseFormattedCount(finalValue);
     }
     return 0;
   };
@@ -33,6 +49,9 @@ export const AnimatedCounter = ({ finalValue, duration = 1000, isLoading = false
     const startValue = displayValue;
     const valueDiff = targetValue - startValue;
 
+    // Reset start time for new animation
+    startTimeRef.current = undefined;
+
     const animate = (timestamp: number) => {
       if (!startTimeRef.current) {
         startTimeRef.current = timestamp;
@@ -40,9 +59,8 @@ export const AnimatedCounter = ({ finalValue, duration = 1000, isLoading = false
 
       const elapsed = timestamp - startTimeRef.current;
       const progress = Math.min(elapsed / duration, 1);
-
-      const easeOutCubic = 1 - Math.pow(1 - progress, 3);
-      const currentValue = Math.round(startValue + (valueDiff * easeOutCubic));
+      const easedProgress = easeOutCubic(progress);
+      const currentValue = Math.round(startValue + valueDiff * easedProgress);
 
       setDisplayValue(currentValue);
 
@@ -65,9 +83,11 @@ export const AnimatedCounter = ({ finalValue, duration = 1000, isLoading = false
     {
       style: {
         transition: 'opacity 0.3s ease',
-        opacity: isLoading ? 0.5 : 1
-      }
+        opacity: isLoading ? 0.5 : 1,
+      },
     },
-    isLoading ? "00000" : new Intl.NumberFormat().format(displayValue)
+    isLoading ? '00000' : formatPlayerCount(displayValue)
   );
 };
+
+export default AnimatedCounter;

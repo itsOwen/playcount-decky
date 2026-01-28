@@ -130,10 +130,10 @@ export const PlayerStatsModal = ({ appId, closeModal }: PlayerStatsModalProps) =
         const fetchData = async () => {
             try {
                 // Check cache first
-                const cachedChartData = await CACHE.loadValue(`${CACHE_KEY_CHART}${appId}`);
-                const cachedStats = await CACHE.loadValue(`${CACHE_KEY_PREFIX}${appId}`);
+                const cachedChartData = await CACHE.loadValue<ChartData[]>(`${CACHE_KEY_CHART}${appId}`);
+                const cachedStats = await CACHE.loadValue<PlayerStats>(`${CACHE_KEY_PREFIX}${appId}`);
 
-                if (cachedChartData && cachedStats) {
+                if (cachedChartData && cachedStats && Array.isArray(cachedChartData)) {
                     setChartData(cachedChartData);
                     setStats(cachedStats);
                     setIsLoading(false);

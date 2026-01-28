@@ -1,3 +1,8 @@
+/**
+ * Settings component - plugin configuration UI
+ * Refactored to use useSettings hook and reduce repetition
+ */
+
 import {
   PanelSection,
   PanelSectionRow,
@@ -5,426 +10,409 @@ import {
   SliderField,
   SingleDropdownOption,
   ToggleField,
-  ButtonItem
+  ButtonItem,
 } from '@decky/ui';
-import { BadgePosition, loadSettings, saveSettings, DEFAULT_SETTINGS, IconType } from '../utils/Settings';
+import { useSettings } from '../hooks/useSettings';
+import { Settings as SettingsType } from '../utils/Settings';
+import { CACHE } from '../utils/Cache';
 import { iconOptions } from '../utils/IconUtils';
 import { getColorSlider } from './ColorPicker';
+import { BADGE_POSITIONS } from '../constants';
+
+const { useCallback, useMemo } = window.SP_REACT;
+
+// Position options for dropdown
+const positionOptions = BADGE_POSITIONS.map(({ value, label }) => ({
+  data: value,
+  label,
+}));
+
+// Slider notch configurations
+const SIZE_NOTCHES = [
+  { notchIndex: 0, label: 'Small' },
+  { notchIndex: 4, label: 'Default' },
+  { notchIndex: 8, label: 'Large' },
+];
+
+const HORIZONTAL_NOTCHES = [
+  { notchIndex: 0, label: '0%' },
+  { notchIndex: 20, label: '20%' },
+  { notchIndex: 40, label: '40%' },
+];
+
+const VERTICAL_NOTCHES = [
+  { notchIndex: 0, label: '-50px' },
+  { notchIndex: 75, label: '25px' },
+  { notchIndex: 150, label: '100px' },
+];
+
+/**
+ * Helper to create a toggle field row
+ */
+const createToggleRow = (
+  key: string,
+  label: string,
+  description: string,
+  checked: boolean,
+  onChange: (value: boolean) => void
+) =>
+  window.SP_REACT.createElement(
+    PanelSectionRow,
+    { key },
+    window.SP_REACT.createElement(ToggleField, {
+      label,
+      description,
+      checked,
+      onChange,
+    })
+  );
+
+/**
+ * Helper to create a slider field row
+ */
+const createSliderRow = (
+  key: string,
+  label: string,
+  description: string,
+  value: number,
+  min: number,
+  max: number,
+  step: number,
+  onChange: (value: number) => void,
+  notchLabels: Array<{ notchIndex: number; label: string }>
+) =>
+  window.SP_REACT.createElement(
+    PanelSectionRow,
+    { key },
+    window.SP_REACT.createElement(SliderField, {
+      label,
+      description,
+      value,
+      min,
+      max,
+      step,
+      onChange,
+      notchLabels,
+      showValue: true,
+    })
+  );
+
+/**
+ * Helper to create a dropdown field row
+ */
+const createDropdownRow = (
+  key: string,
+  label: string,
+  description: string,
+  options: Array<{ data: string; label: string }>,
+  selectedOption: string,
+  onChange: (newValue: SingleDropdownOption) => void
+) =>
+  window.SP_REACT.createElement(
+    PanelSectionRow,
+    { key },
+    window.SP_REACT.createElement(DropdownItem, {
+      label,
+      description,
+      rgOptions: options,
+      selectedOption,
+      onChange,
+    })
+  );
 
 export const Settings = () => {
-  const [settings, setSettings] = window.SP_REACT.useState(loadSettings());
+  const { settings, updateSetting, resetSettings } = useSettings();
 
-  const positions: { [key in BadgePosition]: string } = {
-    'top-right': 'Top Right',
-    'top-left': 'Top Left'
-  };
+  // Memoized update handlers
+  const handleToggle = useCallback(
+    (key: keyof SettingsType) => (value: boolean) => updateSetting(key, value as SettingsType[typeof key]),
+    [updateSetting]
+  );
 
-  const positionOptions = Object.entries(positions).map(([value, label]) => ({
-    data: value,
-    label: label
-  }));
+  const handleSlider = useCallback(
+    (key: keyof SettingsType) => (value: number) => updateSetting(key, value as SettingsType[typeof key]),
+    [updateSetting]
+  );
 
-  return [
-    // Library Badge Settings Section
-    window.SP_REACT.createElement(
-      PanelSection,
-      { title: "Library Badge Settings", key: "library-badge-settings" },
-      [
-        window.SP_REACT.createElement(
-          PanelSectionRow,
-          { key: "show-library-badge-row" },
-          window.SP_REACT.createElement(
-            ToggleField,
-            {
-              label: "Show Library Badge",
-              description: "Show player count badge in game library",
-              checked: settings.showLibraryCount,
-              onChange: (value) => {
-                const newSettings = {
-                  ...settings,
-                  showLibraryCount: value
-                };
-                setSettings(newSettings);
-                saveSettings(newSettings);
-              }
-            }
-          )
-        ),
-        settings.showLibraryCount && window.SP_REACT.createElement(
-          PanelSectionRow,
-          { key: "position-row" },
-          window.SP_REACT.createElement(
-            DropdownItem,
-            {
-              label: "Badge Position",
-              description: "Choose where the player count badge appears",
-              rgOptions: positionOptions,
-              selectedOption: settings.badgePosition,
-              onChange: (newValue: SingleDropdownOption) => {
-                const position = newValue.data as BadgePosition;
-                const newSettings = {
-                  ...settings,
-                  badgePosition: position
-                };
-                setSettings(newSettings);
-                saveSettings(newSettings);
-              }
-            }
-          )
-        ),
-        settings.showLibraryCount && window.SP_REACT.createElement(
-          PanelSectionRow,
-          { key: "library-icon-row" },
-          window.SP_REACT.createElement(
-            DropdownItem,
-            {
-              label: "Library Badge Icon",
-              description: "Choose the icon shown in the library badge",
-              rgOptions: iconOptions,
-              selectedOption: settings.libraryIconType,
-              onChange: (newValue: SingleDropdownOption) => {
-                const iconType = newValue.data as IconType;
-                const newSettings = {
-                  ...settings,
-                  libraryIconType: iconType
-                };
-                setSettings(newSettings);
-                saveSettings(newSettings);
-              }
-            }
-          )
-        ),
-        settings.showLibraryCount && window.SP_REACT.createElement(
-          PanelSectionRow,
-          { key: "enable-animation-row" },
-          window.SP_REACT.createElement(
-            ToggleField,
-            {
-              label: "Smooth Number Animation",
-              description: "Enable smooth animation when player count updates",
-              checked: settings.enableCountAnimation,
-              onChange: (value) => {
-                const newSettings = {
-                  ...settings,
-                  enableCountAnimation: value
-                };
-                setSettings(newSettings);
-                saveSettings(newSettings);
-              }
-            }
-          )
-        ),
-        settings.showLibraryCount && window.SP_REACT.createElement(
-          PanelSectionRow,
-          { key: "size-row" },
-          window.SP_REACT.createElement(
-            SliderField,
-            {
-              label: "Badge Size",
-              description: "Adjust the size of the badge",
-              value: settings.badgeSize,
-              min: 0.7,
-              max: 1.5,
-              step: 0.1,
-              onChange: (value) => {
-                const newSettings = {
-                  ...settings,
-                  badgeSize: value
-                };
-                setSettings(newSettings);
-                saveSettings(newSettings);
-              },
-              notchLabels: [
-                { notchIndex: 0, label: "Small" },
-                { notchIndex: 4, label: "Default" },
-                { notchIndex: 8, label: "Large" }
-              ],
-              showValue: true
-            }
-          )
-        ),
-        settings.showLibraryCount && window.SP_REACT.createElement(
-          PanelSectionRow,
-          { key: "hide-library-online-text-row" },
-          window.SP_REACT.createElement(
-            ToggleField,
-            {
-              label: "Hide 'Online' Text in Library",
-              description: "Show only the player count number in library view",
-              checked: settings.hideLibraryOnlineText,
-              onChange: (value) => {
-                const newSettings = {
-                  ...settings,
-                  hideLibraryOnlineText: value
-                };
-                setSettings(newSettings);
-                saveSettings(newSettings);
-              }
-            }
-          )
-        ),
-        settings.showLibraryCount && window.SP_REACT.createElement(
-          PanelSectionRow,
-          { key: "rounded-corners-row" },
-          window.SP_REACT.createElement(
-            ToggleField,
-            {
-              label: "Rounded Corners",
-              description: "Toggle between rounded or sharp corners",
-              checked: settings.roundedCorners,
-              onChange: (value) => {
-                const newSettings = {
-                  ...settings,
-                  roundedCorners: value
-                };
-                setSettings(newSettings);
-                saveSettings(newSettings);
-              }
-            }
-          )
-        )
-      ]
-    ),
+  const handleDropdown = useCallback(
+    (key: keyof SettingsType) => (newValue: SingleDropdownOption) =>
+      updateSetting(key, newValue.data as SettingsType[typeof key]),
+    [updateSetting]
+  );
 
-    window.SP_REACT.createElement(
-      PanelSection,
-      { title: "Badge Colors", key: "badge-colors" },
-      [
-        window.SP_REACT.createElement(
-          PanelSectionRow,
-          { key: "use-custom-colors-row" },
-          window.SP_REACT.createElement(
-            ToggleField,
-            {
-              label: "Use Custom Colors",
-              description: "Override default badge colors",
-              checked: settings.useCustomColors,
-              onChange: (value) => {
-                const newSettings = {
-                  ...settings,
-                  useCustomColors: value
-                };
-                setSettings(newSettings);
-                saveSettings(newSettings);
-              }
-            }
-          )
-        ),
-        settings.useCustomColors && window.SP_REACT.createElement(
-          PanelSectionRow,
-          { key: "badge-color-row" },
-          getColorSlider("Badge Color", settings.customBadgeColor, (color) => {
-            const newSettings = {
-              ...settings,
-              customBadgeColor: color
-            };
-            setSettings(newSettings);
-            saveSettings(newSettings);
-          })
-        ),
-        settings.useCustomColors && window.SP_REACT.createElement(
-          PanelSectionRow,
-          { key: "text-color-row" },
-          getColorSlider("Text Color", settings.customTextColor, (color) => {
-            const newSettings = {
-              ...settings,
-              customTextColor: color
-            };
-            setSettings(newSettings);
-            saveSettings(newSettings);
-          })
-        ),
-        settings.useCustomColors && window.SP_REACT.createElement(
-          PanelSectionRow,
-          { key: "icon-color-row" },
-          getColorSlider("Icon Color", settings.customIconColor, (color) => {
-            const newSettings = {
-              ...settings,
-              customIconColor: color
-            };
-            setSettings(newSettings);
-            saveSettings(newSettings);
-          })
-        )
-      ]
-    ),
+  const handleColorChange = useCallback(
+    (key: keyof SettingsType) => (color: string) => updateSetting(key, color as SettingsType[typeof key]),
+    [updateSetting]
+  );
 
-    // Store Footer Settings Section
-    window.SP_REACT.createElement(
-      PanelSection,
-      { title: "Store Footer Settings", key: "store-footer-settings" },
-      [
-        window.SP_REACT.createElement(
-          PanelSectionRow,
-          { key: "show-store-count-row" },
-          window.SP_REACT.createElement(
-            ToggleField,
-            {
-              label: "Show Store Footer",
-              description: "Show player count text in Steam store",
-              checked: settings.showStoreCount,
-              onChange: (value) => {
-                const newSettings = {
-                  ...settings,
-                  showStoreCount: value
-                };
-                setSettings(newSettings);
-                saveSettings(newSettings);
-              }
-            }
-          )
-        ),
-        settings.showStoreCount && window.SP_REACT.createElement(
-          PanelSectionRow,
-          { key: "store-icon-row" },
-          window.SP_REACT.createElement(
-            DropdownItem,
-            {
-              label: "Store Footer Icon",
-              description: "Choose the icon shown in the store footer",
-              rgOptions: iconOptions,
-              selectedOption: settings.storeIconType,
-              onChange: (newValue: SingleDropdownOption) => {
-                const iconType = newValue.data as IconType;
-                const newSettings = {
-                  ...settings,
-                  storeIconType: iconType
-                };
-                setSettings(newSettings);
-                saveSettings(newSettings);
-              }
-            }
-          )
-        ),
-        settings.showStoreCount && window.SP_REACT.createElement(
-          PanelSectionRow,
-          { key: "hide-store-online-text-row" },
-          window.SP_REACT.createElement(
-            ToggleField,
-            {
-              label: "Hide 'Online' Text in Store",
-              description: "Show only the player count number in store view",
-              checked: settings.hideStoreOnlineText,
-              onChange: (value) => {
-                const newSettings = {
-                  ...settings,
-                  hideStoreOnlineText: value
-                };
-                setSettings(newSettings);
-                saveSettings(newSettings);
-              }
-            }
-          )
-        ),
-        settings.showStoreCount && window.SP_REACT.createElement(
-          PanelSectionRow,
-          { key: "store-text-size-row" },
-          window.SP_REACT.createElement(
-            SliderField,
-            {
-              label: "Text Size",
-              description: "Adjust the size of the player count text",
-              value: settings.storeTextSize,
-              min: 0.7,
-              max: 1.5,
-              step: 0.1,
-              onChange: (value) => {
-                const newSettings = {
-                  ...settings,
-                  storeTextSize: value
-                };
-                setSettings(newSettings);
-                saveSettings(newSettings);
-              },
-              notchLabels: [
-                { notchIndex: 0, label: "Small" },
-                { notchIndex: 4, label: "Default" },
-                { notchIndex: 8, label: "Large" }
-              ],
-              showValue: true
-            }
-          )
-        ),
-        settings.showStoreCount && window.SP_REACT.createElement(
-          PanelSectionRow,
-          { key: "store-text-position-row" },
-          window.SP_REACT.createElement(
-            SliderField,
-            {
-              label: "Horizontal Position",
-              description: "Adjust the left/right position (percentage)",
-              value: settings.storeTextPosition,
-              min: 0,
-              max: 40,
-              step: 1,
-              onChange: (value) => {
-                const newSettings = {
-                  ...settings,
-                  storeTextPosition: value
-                };
-                setSettings(newSettings);
-                saveSettings(newSettings);
-              },
-              notchLabels: [
-                { notchIndex: 0, label: "0%" },
-                { notchIndex: 20, label: "20%" },
-                { notchIndex: 40, label: "40%" }
-              ],
-              showValue: true
-            }
-          )
-        ),
-        settings.showStoreCount && window.SP_REACT.createElement(
-          PanelSectionRow,
-          { key: "store-text-bottom-row" },
-          window.SP_REACT.createElement(
-            SliderField,
-            {
-              label: "Vertical Position",
-              description: "Adjust the vertical position from bottom (pixels)",
-              value: settings.storeTextBottom,
-              min: -50,
-              max: 100,
-              step: 1,
-              onChange: (value) => {
-                const newSettings = {
-                  ...settings,
-                  storeTextBottom: value
-                };
-                setSettings(newSettings);
-                saveSettings(newSettings);
-              },
-              notchLabels: [
-                { notchIndex: 0, label: "-50px" },
-                { notchIndex: 75, label: "25px" },
-                { notchIndex: 150, label: "100px" }
-              ],
-              showValue: true
-            }
-          )
-        )
-      ]
-    ),
-
-    // Reset Settings Section
-    window.SP_REACT.createElement(
-      PanelSection,
-      { title: "Reset Settings", key: "reset-settings" },
+  // Library Badge Section
+  const libraryBadgeSection = useMemo(
+    () =>
       window.SP_REACT.createElement(
-        PanelSectionRow,
-        { key: "reset-button-row" },
-        window.SP_REACT.createElement(
-          ButtonItem,
-          {
-            layout: "below",
-            onClick: () => {
-              setSettings(DEFAULT_SETTINGS);
-              saveSettings(DEFAULT_SETTINGS);
-            }
-          },
-          "Reset All Settings to Default"
-        )
-      )
-    )
-  ];
+        PanelSection,
+        { title: 'Library Badge Settings', key: 'library-badge-settings' },
+        [
+          createToggleRow(
+            'show-library-badge-row',
+            'Show Library Badge',
+            'Show player count badge in game library',
+            settings.showLibraryCount,
+            handleToggle('showLibraryCount')
+          ),
+
+          settings.showLibraryCount &&
+            createDropdownRow(
+              'position-row',
+              'Badge Position',
+              'Choose where the player count badge appears',
+              positionOptions,
+              settings.badgePosition,
+              handleDropdown('badgePosition')
+            ),
+
+          settings.showLibraryCount &&
+            createDropdownRow(
+              'library-icon-row',
+              'Library Badge Icon',
+              'Choose the icon shown in the library badge',
+              iconOptions,
+              settings.libraryIconType,
+              handleDropdown('libraryIconType')
+            ),
+
+          settings.showLibraryCount &&
+            createToggleRow(
+              'enable-animation-row',
+              'Smooth Number Animation',
+              'Enable smooth animation when player count updates',
+              settings.enableCountAnimation,
+              handleToggle('enableCountAnimation')
+            ),
+
+          settings.showLibraryCount &&
+            createSliderRow(
+              'size-row',
+              'Badge Size',
+              'Adjust the size of the badge',
+              settings.badgeSize,
+              0.7,
+              1.5,
+              0.1,
+              handleSlider('badgeSize'),
+              SIZE_NOTCHES
+            ),
+
+          settings.showLibraryCount &&
+            createToggleRow(
+              'hide-library-online-text-row',
+              "Hide 'Online' Text in Library",
+              'Show only the player count number in library view',
+              settings.hideLibraryOnlineText,
+              handleToggle('hideLibraryOnlineText')
+            ),
+
+          settings.showLibraryCount &&
+            createToggleRow(
+              'rounded-corners-row',
+              'Rounded Corners',
+              'Toggle between rounded or sharp corners',
+              settings.roundedCorners,
+              handleToggle('roundedCorners')
+            ),
+        ].filter(Boolean)
+      ),
+    [
+      settings.showLibraryCount,
+      settings.badgePosition,
+      settings.libraryIconType,
+      settings.enableCountAnimation,
+      settings.badgeSize,
+      settings.hideLibraryOnlineText,
+      settings.roundedCorners,
+      handleToggle,
+      handleDropdown,
+      handleSlider,
+    ]
+  );
+
+  // Badge Colors Section
+  const badgeColorsSection = useMemo(
+    () =>
+      window.SP_REACT.createElement(
+        PanelSection,
+        { title: 'Badge Colors', key: 'badge-colors' },
+        [
+          createToggleRow(
+            'use-custom-colors-row',
+            'Use Custom Colors',
+            'Override default badge colors',
+            settings.useCustomColors,
+            handleToggle('useCustomColors')
+          ),
+
+          settings.useCustomColors &&
+            window.SP_REACT.createElement(
+              PanelSectionRow,
+              { key: 'badge-color-row' },
+              getColorSlider('Badge Color', settings.customBadgeColor, handleColorChange('customBadgeColor'))
+            ),
+
+          settings.useCustomColors &&
+            window.SP_REACT.createElement(
+              PanelSectionRow,
+              { key: 'text-color-row' },
+              getColorSlider('Text Color', settings.customTextColor, handleColorChange('customTextColor'))
+            ),
+
+          settings.useCustomColors &&
+            window.SP_REACT.createElement(
+              PanelSectionRow,
+              { key: 'icon-color-row' },
+              getColorSlider('Icon Color', settings.customIconColor, handleColorChange('customIconColor'))
+            ),
+        ].filter(Boolean)
+      ),
+    [
+      settings.useCustomColors,
+      settings.customBadgeColor,
+      settings.customTextColor,
+      settings.customIconColor,
+      handleToggle,
+      handleColorChange,
+    ]
+  );
+
+  // Store Footer Section
+  const storeFooterSection = useMemo(
+    () =>
+      window.SP_REACT.createElement(
+        PanelSection,
+        { title: 'Store Footer Settings', key: 'store-footer-settings' },
+        [
+          createToggleRow(
+            'show-store-count-row',
+            'Show Store Footer',
+            'Show player count text in Steam store',
+            settings.showStoreCount,
+            handleToggle('showStoreCount')
+          ),
+
+          settings.showStoreCount &&
+            createDropdownRow(
+              'store-icon-row',
+              'Store Footer Icon',
+              'Choose the icon shown in the store footer',
+              iconOptions,
+              settings.storeIconType,
+              handleDropdown('storeIconType')
+            ),
+
+          settings.showStoreCount &&
+            createToggleRow(
+              'hide-store-online-text-row',
+              "Hide 'Online' Text in Store",
+              'Show only the player count number in store view',
+              settings.hideStoreOnlineText,
+              handleToggle('hideStoreOnlineText')
+            ),
+
+          settings.showStoreCount &&
+            createSliderRow(
+              'store-text-size-row',
+              'Text Size',
+              'Adjust the size of the player count text',
+              settings.storeTextSize,
+              0.7,
+              1.5,
+              0.1,
+              handleSlider('storeTextSize'),
+              SIZE_NOTCHES
+            ),
+
+          settings.showStoreCount &&
+            createSliderRow(
+              'store-text-position-row',
+              'Horizontal Position',
+              'Adjust the left/right position (percentage)',
+              settings.storeTextPosition,
+              0,
+              40,
+              1,
+              handleSlider('storeTextPosition'),
+              HORIZONTAL_NOTCHES
+            ),
+
+          settings.showStoreCount &&
+            createSliderRow(
+              'store-text-bottom-row',
+              'Vertical Position',
+              'Adjust the vertical position from bottom (pixels)',
+              settings.storeTextBottom as number,
+              -50,
+              100,
+              1,
+              handleSlider('storeTextBottom'),
+              VERTICAL_NOTCHES
+            ),
+        ].filter(Boolean)
+      ),
+    [
+      settings.showStoreCount,
+      settings.storeIconType,
+      settings.hideStoreOnlineText,
+      settings.storeTextSize,
+      settings.storeTextPosition,
+      settings.storeTextBottom,
+      handleToggle,
+      handleDropdown,
+      handleSlider,
+    ]
+  );
+
+  // Clear cache handler
+  const handleClearCache = useCallback(() => {
+    if (CACHE) {
+      CACHE.clear();
+    }
+  }, []);
+
+  // Reset Section
+  const resetSection = useMemo(
+    () =>
+      window.SP_REACT.createElement(
+        PanelSection,
+        { title: 'Reset & Cache', key: 'reset-settings' },
+        [
+          window.SP_REACT.createElement(
+            PanelSectionRow,
+            { key: 'clear-cache-row' },
+            window.SP_REACT.createElement(
+              ButtonItem,
+              {
+                layout: 'below',
+                onClick: handleClearCache,
+              },
+              'Clear Cache'
+            )
+          ),
+          window.SP_REACT.createElement(
+            PanelSectionRow,
+            { key: 'reset-button-row' },
+            window.SP_REACT.createElement(
+              ButtonItem,
+              {
+                layout: 'below',
+                onClick: resetSettings,
+              },
+              'Reset Settings to Default'
+            )
+          ),
+        ]
+      ),
+    [resetSettings, handleClearCache]
+  );
+
+  return [libraryBadgeSection, badgeColorsSection, storeFooterSection, resetSection];
 };
+
+export default Settings;
