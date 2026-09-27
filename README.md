@@ -1,5 +1,7 @@
 # PlayCount 🎮 
 
+![Downloads](https://rapid-dawn-2246.slick0.workers.dev/downloads)
+![Updates](https://rapid-dawn-2246.slick0.workers.dev/updates)
 
 <img src="/assets/playcount-logo.png" alt="PlayCount Banner" width="500"/>
 
