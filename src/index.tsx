@@ -11,7 +11,7 @@ import {
   PanelSection,
   PanelSectionRow,
 } from '@decky/ui';
-import { FaUsers, FaGithub, FaDiscord, FaEnvelope } from 'react-icons/fa';
+import { FaUsers, FaGithub, FaDiscord } from 'react-icons/fa';
 import { PlayerCount } from './components/PlayerCount';
 import { Settings } from './components/Settings';
 import { patchStore } from './patches/StorePatch';
@@ -23,7 +23,6 @@ import { SOCIAL_LINKS, COLORS } from './constants';
 const SOCIAL_COLORS = {
   discord: '#5865F2',
   github: COLORS.TEXT_PRIMARY,
-  email: '#8B5CF6',
 } as const;
 
 interface SocialButtonProps {
@@ -152,15 +151,6 @@ export default definePlugin(() => {
             }),
             text: 'Github',
             url: SOCIAL_LINKS.GITHUB,
-          }),
-          window.SP_REACT.createElement(SocialButton, {
-            key: 'email',
-            icon: window.SP_REACT.createElement(FaEnvelope, {
-              color: SOCIAL_COLORS.email,
-              size: 24,
-            }),
-            text: 'Email Me',
-            url: SOCIAL_LINKS.EMAIL,
           }),
         ]
       ),

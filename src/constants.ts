@@ -149,5 +149,4 @@ export const ROUTES = {
 export const SOCIAL_LINKS = {
   DISCORD: 'https://discord.gg/M7Y5kfUea5',
   GITHUB: 'https://github.com/itsOwen',
-  EMAIL: 'https://github.com/itsOwen',
 } as const;
